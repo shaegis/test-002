@@ -18,24 +18,16 @@
         <ul class="menu">
             {#if $page.data.user}
                 <li>
-                    <form method="POST" action="/account/dash_board">
-                        <button type="submit">Dash-board</button>
-                    </form>
+                    <a href="/dash_board" class:active-btn={$page.url.pathname === "/dash_board"}>Dash-board</a>
                 </li>
                 <li>
-                    <form method="POST" action="/account/progress">
-                        <button type="submit">Progress</button>
-                    </form>
+                    <a href="/progress" class:active-btn={$page.url.pathname === "/progress"}>Progress</a>
                 </li>
                 <li>
-                    <form method="POST" action="/account/protections">
-                        <button type="submit">Protections</button>
-                    </form>
+                    <a href="/protections" class:active-btn={$page.url.pathname === "/protections"}>Protections</a>
                 </li>
                 <li>
-                    <form method="POST" action="/account/scales">
-                        <button type="submit">Scales</button>
-                    </form>
+                    <a href="/scales" class:active-btn={$page.url.pathname === "/scales"}>Scales</a>
                 </li>
              {/if}
         </ul>
@@ -86,6 +78,18 @@
         padding: 0;
         gap: 1rem;
     }
+
+	.active-btn {
+		background-color: #007bff;
+		color: white;
+		border: 2px solid #0056b3;
+		border-radius: 5px;
+		padding: 0.5rem 1rem;
+	}
+    
+	.active-btn:hover {
+		background-color: #0056b3;
+	}
 
     .auth {
         display: flex;

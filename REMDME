@@ -2,6 +2,7 @@
 ## link & POST
 - server에서 action을 유발하려면 POST를 해야 한다.
 - href의link로는 action이 유발되지 않는다.
+- 단, POST가 필요 없는 곳에서는 GET (href)를 사용해야 error안난다.
 ## $page stroe의 위대함.
 - hooks.server.ts에 event.locals.user = user; event.locals.session = session;를 삽입해 두니, $page에 저장된다.
 - +layout.server.ts에서의 getSession따위 필요가 없다.

@@ -18,18 +18,23 @@
         <ul class="menu">
             {#if $page.data.user}
                 <li>
+                    <form method="POST" action="/account/dash_board">
+                        <button type="submit">Dash-board</button>
+                    </form>
+                </li>
+                <li>
                     <form method="POST" action="/account/progress">
                         <button type="submit">Progress</button>
                     </form>
                 </li>
                 <li>
-                    <form method="POST" action="/account/scales">
-                        <button type="submit">Scales</button>
+                    <form method="POST" action="/account/protections">
+                        <button type="submit">Protections</button>
                     </form>
                 </li>
                 <li>
-                    <form method="POST" action="/account/protections">
-                        <button type="submit">Protections</button>
+                    <form method="POST" action="/account/scales">
+                        <button type="submit">Scales</button>
                     </form>
                 </li>
              {/if}

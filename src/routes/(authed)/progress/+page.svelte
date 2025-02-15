@@ -37,9 +37,11 @@
                                 <input type="radio" id="aggrevated" name="palpitation" value="aggrevated" />
                                 <span>aggrevated</span>
                             </label><br>
-                    </fieldset>
-                    <fieldset>
-                        <legend class="inline-block">heaviness</legend>
+                    </div>
+                    <!-- TODO -->
+                    <!--- 위 tailwind css 있는 것은 보기 좋음. 아래는 inline으로 되나 다소 보기 좋지 않음. 통째로 적용할 방법을 향후 고려 -->
+                    <div>
+                        <span>heaviness</span>
                             <label>
                                 <input type="radio" id="negative" name="heaviness" value="negative" />
                                 <span>-</span>
@@ -60,7 +62,7 @@
                                 <input type="radio" id="aggrevated" name="heaviness" value="aggrevated" />
                                 <span>aggrevated</span>
                             </label>
-                    </fieldset>
+                    </div>
                     <fieldset>
                         <legend class="inline-block">dyspnea</legend>
                             <label>

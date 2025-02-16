@@ -2,6 +2,30 @@
     import type { PageServerData } from './$types';
 
     let { data }: { data: PageServerData } = $props();
+
+    const symptoms = [
+        { name: 'palpitation', label: 'palpitation' },
+        { name: 'heaviness', label: 'heaviness' },
+        { name: 'dyspnea', label: 'dyspnea' },
+        { name: 'heating-sense', label: 'heating-sense' },
+        { name: 'sweating', label: 'sweating' },
+        { name: 'globus', label: 'globus' },
+        { name: 'vertigo', label: 'vertigo' },
+        { name: 'headache-migrain', label: 'headache/migrain' },
+        { name: 'nasea', label: 'nasea' },
+        { name: 'indigestion', label: 'indigestion' },
+        { name: 'tinnitus', label: 'tinnitus' },
+        { name: 'blepharospasm', label: 'blepharospasm' },
+        { name: 'concentation', label: 'concentation' }
+    ];
+
+    const options = [
+        { value: 'negative', label: '-' },
+        { value: 'positive', label: '+' },
+        { value: 'neutral', label: '+/-' },
+        { value: 'improved', label: 'improved' },
+        { value: 'aggrevated', label: 'aggrevated' }
+    ];
 </script>
 
 <article class="prose">
@@ -15,123 +39,18 @@
             <h3>Symptoms</h3>
             <fieldset>
                     <legend>Somatic Symptoms</legend>
-                    <div class="flex items-center gap-4">
-                        <span>plapitation</span>
-                            <label>
-                                <input type="radio" id="negative" name="palpitation" value="negative" />
-                                <span>-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="positive" name="palpitation" value="positive" />
-                                <span>+</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="neutral" name="palpitation" value="neutral" />
-                                <span>+/-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="improved" name="palpitation" value="improved" />
-                                <span>improved</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="aggrevated" name="palpitation" value="aggrevated" />
-                                <span>aggrevated</span>
-                            </label><br>
-                    </div>
-                    <!-- TODO -->
-                    <!--- 위 tailwind css 있는 것은 보기 좋음. 아래는 inline으로 되나 다소 보기 좋지 않음. 통째로 적용할 방법을 향후 고려 -->
-                    <div>
-                        <span>heaviness</span>
-                            <label>
-                                <input type="radio" id="negative" name="heaviness" value="negative" />
-                                <span>-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="positive" name="heaviness" value="positive" />
-                                <span>+</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="neutral" name="heaviness" value="neutral" />
-                                <span>+/-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="improved" name="heaviness" value="improved" />
-                                <span>improved</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="aggrevated" name="heaviness" value="aggrevated" />
-                                <span>aggrevated</span>
-                            </label>
-                    </div>
-                    <fieldset>
-                        <legend class="inline-block">dyspnea</legend>
-                            <label>
-                                <input type="radio" id="negative" name="dyspnea" value="negative" />
-                                <span>-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="positive" name="dyspnea" value="positive" />
-                                <span>+</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="neutral" name="dyspnea" value="neutral" />
-                                <span>+/-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="improved" name="dyspnea" value="improved" />
-                                <span>improved</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="aggrevated" name="dyspnea" value="aggrevated" />
-                                <span>aggrevated</span>
-                            </label>
-                    </fieldset>
-                    <fieldset>
-                        <legend class="inline-block">heating sense</legend>
-                            <label>
-                                <input type="radio" id="negative" name="heating-sense" value="negative" />
-                                <span>-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="positive" name="heating-sense" value="positive" />
-                                <span>+</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="neutral" name="heating-sense" value="neutral" />
-                                <span>+/-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="improved" name="heating-sense" value="improved" />
-                                <span>improved</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="aggrevated" name="heating-sense" value="aggrevated" />
-                                <span>aggrevated</span>
-                            </label>
-                    </fieldset>
-                    <fieldset>
-                        <legend class="inline-block">sweating</legend>
-                            <label>
-                                <input type="radio" id="negative" name="sweating" value="negative" />
-                                <span>-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="positive" name="sweating" value="positive" />
-                                <span>+</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="neutral" name="sweating" value="neutral" />
-                                <span>+/-</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="improved" name="sweating" value="improved" />
-                                <span>improved</span>
-                            </label>
-                            <label>
-                                <input type="radio" id="aggrevated" name="sweating" value="aggrevated" />
-                                <span>aggrevated</span>
-                            </label>
-                </fieldset>
-            </section>
+                    {#each symptoms as symptom}
+                        <div class="flex items-center gap-4">
+                            <span>{symptom.label}</span>
+                            {#each options as option}
+                                <label>
+                                    <input type="radio" id={option.value} name={symptom.name} value={option.value} />
+                                    <span>{option.label}</span>
+                                </label>
+                            {/each}
+                        </div>
+                    {/each}
+            </fieldset>
+        </section>
     </form>
 </article>

@@ -44,9 +44,39 @@
         { value: 'aggrevated', label: 'aggrevated' }
     ];
 
-    const percent_range = Array.from({ length: 10 }, (_, index) => {
-        const i = 90 - index * 10;
-        return { value: `${i}`, label: `${i}` };
+    const percent_range = Array.from({ length: 10 }, (_, i) => ({
+        value: `${90 - i * 10}`,
+        label: `${90 - i * 10}`
+    }));
+
+    const time_periods = ['awake', 'morning', 'noon', 'afternoon', 'dusk', 'evening', 'night', 'before bed', 'sleep'];
+
+    let form = $state({
+        psychological: {} as Record<string, string>,
+        somatic: {} as Record<string, string>,
+        occursIn: '',
+        attack: {
+            type: '',
+            frequency: '',
+            unit: '',
+            intensity: ''
+        },
+        suicidal: {
+            idea: false,
+            plan: false,
+            attampt: false,
+            methods: [] as string[],
+            otherMethod: '',
+            when: {
+                amount: '',
+                unit: ''
+            }
+        },
+        homocidal: {
+            idea: false,
+            plan: false,
+            attempt: false
+        }
     });
 </script>
 
@@ -66,13 +96,18 @@
                         <span>{symptom.label}</span>
                         {#each options as option}
                             <label>
-                                <input type="radio" name={symptom.name} value={option.value} />
+                                <input
+                                    type="radio"
+                                    value={option.value}
+                                    bind:group={form.psychological[symptom.name]}
+                                />
                                 <span>{option.label}</span>
                             </label>
                         {/each}
                     </div>
                 {/each}
             </fieldset>
+
             <fieldset>
                 <legend>Somatic Symptoms</legend>
                 {#each somatic_symptoms as symptom}
@@ -80,70 +115,141 @@
                         <span>{symptom.label}</span>
                         {#each options as option}
                             <label>
-                                <input type="radio" name={symptom.name} value={option.value} />
+                                <input
+                                    type="radio"
+                                    value={option.value}
+                                    bind:group={form.somatic[symptom.name]}
+                                />
                                 <span>{option.label}</span>
                             </label>
                         {/each}
                     </div>
                 {/each}
             </fieldset>
+
             <fieldset>
                 <legend>mainly occures in/at</legend>
-                    <div class="flex items-center gap-4">
-                        <input type="radio" name="symptoms_occures_in" value="awake" /><label>awake</label>
-                        <input type="radio" name="symptoms_occures_in" value="morning" /><label>norning</label>
-                        <input type="radio" name="symptoms_occures_in" value="noon" /><label>noon</label>
-                        <input type="radio" name="symptoms_occures_in" value="afternoon" /><label>afternoon</label>
-                        <input type="radio" name="symptoms_occures_in" value="dusk" /><label>dusk</label>
-                        <input type="radio" name="symptoms_occures_in" value="evening" /><label>evening</label>
-                        <input type="radio" name="symptoms_occures_in" value="night" /><label>night</label>
-                        <input type="radio" name="symptoms_occures_in" value="before bed" /><label>before bed</label>
-                        <input type="radio" name="symptoms_occures_in" value="sleep" /><label>sleep</label>
-            </fieldset> 
+                <div class="flex items-center gap-4">
+                    {#each time_periods as period}
+                        <label>
+                            <input
+                                type="radio"
+                                value={period}
+                                bind:group={form.occursIn}
+                            />
+                            {period}
+                        </label>
+                    {/each}
+                </div>
+            </fieldset>
+
             <fieldset>
                 <legend>Attack</legend>
-                    <div class="flex items-center gap-4">
-                        <input type="radio" name="attack" value="persist" /><label>persist</label>
-                        <input type="radio" name="attack" value="aggrevated" /><label>aggrevated</label>
-                        <input type="radio" name="attack" value="improved" /><label>improved</label>
-                        <input type="number" name="attack" value="" /><label>times</label>
-                        <input type="radio" name="attack" value="day" /><label>/day</label>
-                        <input type="radio" name="attack" value="week" /><label>/week</label>
-                        <select name="intensity">
+                <div class="flex items-center gap-4">
+                    {#each ['persist', 'aggrevated', 'improved', 'resolved'] as type}
+                        <label>
+                            <input
+                                type="radio"
+                                value={type}
+                                bind:group={form.attack.type}
+                            />
+                            {type}
+                        </label>
+                    {/each}
+
+                    <input
+                        type="number"
+                        bind:value={form.attack.frequency}
+                        placeholder="times"
+                    />
+
+                    {#each ['day', 'week'] as unit}
+                        <label>
+                            <input
+                                type="radio"
+                                value={unit}
+                                bind:group={form.attack.unit}
+                            />
+                            /{unit}
+                        </label>
+                    {/each}
+
+                    <label>
+                        <select bind:value={form.attack.intensity}>
                             {#each percent_range as p_range}
                                 <option value={p_range.value}>{p_range.label}</option>
                             {/each}
-                        </select><label>% intensity</label>
-                    </div>
+                        </select>
+                        % intensity
+                    </label>
+                </div>
             </fieldset>
+
             <fieldset>
                 <legend>Suicidal idea</legend>
-                    <div class="flex items-center gap-4">
-                        <input type="checkbox" name="suicidal_idea" /><label>idea</label>
-                        <input type="checkbox" name="suicidal_idea" /><label>plan</label>
-                        <input type="checkbox" name="suicidal_idea" /><label>attempt</label>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <input type="checkbox" name="suicidal_method" /><label>hanging</label>
-                        <input type="checkbox" name="suicidal_method" /><label>poisoning</label>
-                        <input type="checkbox" name="suicidal_method" /><label>knife</label>
-                        <input type="checkbox" name="suicidal_method" /><label>knife</label>
-                        <input type="text" name="suicidal_method" value="" />
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <input type="number" name="suicidal_method" value="" />
-                        <input type="radio" name="suicidal_when" /><label>days</label>
-                        <input type="radio" name="suicidal_when" /><label>months</label>
-                        <input type="radio" name="suicidal_when" /><label>years ago</label>
-                    </div>
+                <div class="flex items-center gap-4">
+                    {#each ['idea', 'plan', 'attempt'] as type}
+                        <label>
+                            <input
+                                type="checkbox"
+                                bind:checked={form.suicidal.idea}
+                            />
+                            {type}
+                        </label>
+                    {/each}
+                </div>
+
+                <div class="flex items-center gap-4">
+                    {#each ['hanging', 'poisoning', 'knife'] as method}
+                        <label>
+                            <input
+                                type="checkbox"
+                                value={method}
+                                bind:group={form.suicidal.methods}
+                            />
+                            {method}
+                        </label>
+                    {/each}
+                    <input
+                        type="text"
+                        bind:value={form.suicidal.otherMethod}
+                        placeholder="Other method"
+                    />
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <input
+                        type="number"
+                        bind:value={form.suicidal.when.amount}
+                        placeholder="1 day/month/year ago"
+                    />
+                    {#each ['days', 'months', 'years'] as unit}
+                        <label>
+                            <input
+                                type="radio"
+                                value={unit}
+                                bind:group={form.suicidal.when.unit}
+                            />
+                            {unit} ago
+                        </label>
+                    {/each}
+                </div>
             </fieldset>
+
             <fieldset>
                 <legend>Homocidal idea</legend>
-                    <div class="flex items-center gap-4">
-                        <input type="checkbox" name="homocidal_idea" /><label>idea</label>
-                        <input type="checkbox" name="homocidal_idea" /><label>plan</label>
-                        <input type="checkbox" name="homocidal_idea" /><label>attempt</label>
-                    </div>
+                <div class="flex items-center gap-4">
+                    {#each ['idea', 'plan', 'attempt'] as type}
+                        <label>
+                            <input
+                                type="checkbox"
+                                bind:checked={form.homocidal.idea}
+                            />
+                            {type}
+                        </label>
+                    {/each}
+                </div>
+            </fieldset>
         </section>
     </form>
 </article>

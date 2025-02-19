@@ -1,5 +1,6 @@
 <script lang='ts'>
     import type { PageServerData } from './$types';
+    import RadioGroup from './RadioGroup.svelte';
 
     let { data }: { data: PageServerData } = $props();
 
@@ -99,6 +100,7 @@
     {/each}
 {/snippet}
 usage: {@render radioGroup(timePeriods, form.occursIn)}
+첫 번째 방법은 부모의 상태를 직접 업데이트하는 함수를 통해 우회하고 있는 반면, 두 번째 방법은 스니펫 매개변수에 직접 양방향 바인딩을 시도하여 불변성 규칙에 위배되기 때문에 에러가 발생합니다.
 
 {#snippet checkboxGroup(options, bindTo)}
     {#each options as option}
@@ -110,6 +112,15 @@ usage: {@render radioGroup(timePeriods, form.occursIn)}
 {/snippet}
 usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 -->
+
+{#snippet radioGroup(options, bindFunction, labelPrefix = '')}
+  {#each options as option}
+    <label>
+      <input type="radio" value={option} onchange={bindFunction(option)} />
+      {labelPrefix}{option}
+    </label>
+  {/each}
+{/snippet}
 
 <article class="prose">
 <h1>{data.user.username} Progress Notes</h1>
@@ -123,7 +134,7 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
         <legend>Psychological Symptoms</legend>
         {#each psychologicalSymptoms as symptom}
             {@render symptoms(symptom, "psychological")}
-        {/each}
+       {/each}
     </fieldset>
 
     <fieldset>
@@ -136,12 +147,16 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
     <fieldset>
         <legend>mainly occures in/at</legend>
         <div class="flex items-center gap-4">
+            {@render radioGroup(timePeriods, (value) => form.occursIn = value)}
+        <!--
+            <RadioGroup options={timePeriods} bind:group={from.occursIn} /> Fail to use Component d/t bind:...
             {#each timePeriods as period}
                 <label>
                     <input type="radio" value={period} bind:group={form.occursIn} />
                     {period}
                 </label>
             {/each}
+        -->
         </div>
     </fieldset>
 

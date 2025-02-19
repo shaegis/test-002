@@ -1,6 +1,6 @@
 <script lang='ts'>
     import type { PageServerData } from './$types';
-    import RadioGroup from './RadioGroup.svelte';
+//    import RadioGroup from './RadioGroup.svelte';
 
     let { data }: { data: PageServerData } = $props();
 
@@ -113,14 +113,34 @@ usage: {@render radioGroup(timePeriods, form.occursIn)}
 usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 -->
 
-{#snippet radioGroup(options, bindFunction, labelPrefix = '')}
+{#snippet radioGroup(options, bindFunction, labelPrefix = '', labelSuffix = '')}
   {#each options as option}
     <label>
       <input type="radio" value={option} onchange={bindFunction(option)} />
-      {labelPrefix}{option}
+      {labelPrefix}{option}{labelSuffix}
     </label>
   {/each}
 {/snippet}
+
+<!--
+{#snippet checkboxGroup(options, bindFunction, labelPrefix = '', labelSuffix = '')}
+    {#each options as option}
+        <label>
+            <input type="checkbox" value={option} onchange={bindFunction(option)} />
+            {labelPrefix}{option}{labelSuffix}
+        </label>
+    {/each}
+{/snippet}
+
+usage: more complex.
+{@render checkboxGroup(['idea', 'plan', 'attempt'], (value, event) => {
+    if (event.target.checked) {
+        form.suicidal.type = [...form.suicidal.type, value]; // Add if checked
+    } else {
+        form.suicidal.type = form.suicidal.type.filter(item => item !== value); // Remove if unchecked
+    }
+})}
+-->
 
 <article class="prose">
 <h1>{data.user.username} Progress Notes</h1>
@@ -163,22 +183,28 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
     <fieldset>
         <legend>Attack</legend>
         <div class="flex items-center gap-4">
+            {@render radioGroup(sxProgress, (value) => form.attack.type = value)}
+            <!--
             {#each sxProgress as progress}
                 <label>
                     <input type="radio" value={progress} bind:group={form.attack.type} />
                     {progress}
                 </label>
             {/each}
+            -->
 
             <input
                 type="number" bind:value={form.attack.frequency} placeholder="times" />
 
+            {@render radioGroup(['day', 'week'], (value) => form.attack.unit = value, "/")}
+            <!--
             {#each ['day', 'week'] as unit}
                 <label>
                     <input type="radio" value={unit} bind:group={form.attack.unit} />
                     / {unit}
                 </label>
             {/each}
+            -->
 
             <label>
                 <select bind:value={form.attack.intensity}>
@@ -194,12 +220,15 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
     <fieldset>
         <legend>Suicidal idea</legend>
         <div class="flex items-center gap-4">
+            {@render radioGroup(['idea', 'plan', 'attempt'], (value) => form.suicidal.type = value)}
+            <!--
             {#each ['idea', 'plan', 'attempt'] as type}
                 <label>
                     <input type="checkbox" bind:group={form.suicidal.type} />
                     {type}
                 </label>
             {/each}
+            -->
         </div>
 
         <div class="flex items-center gap-4">
@@ -214,12 +243,15 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 
         <div class="flex items-center gap-4">
             <input type="number" bind:value={form.suicidal.when.amount} placeholder="1 day/month/year ago" />
+            {@render radioGroup(['days', 'months', 'years'], (value) => form.suicidal.when.unit = value, "", " ago")}
+            <!--
             {#each ['days', 'months', 'years'] as unit}
                 <label>
                     <input type="radio" value={unit} bind:group={form.suicidal.when.unit} />
                     {unit} ago
                 </label>
             {/each}
+            -->
         </div>
     </fieldset>
 

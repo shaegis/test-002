@@ -1,4 +1,7 @@
 <script lang='ts'>
+    //
+    // bind:group으로 인해 error난다.
+    //
     export let options: string[];
     export let group: any;
     export let labelPrefix: string = '';

@@ -116,7 +116,7 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 {#snippet radioGroup(options, bindFunction, labelPrefix = '', labelSuffix = '')}
   {#each options as option}
     <label>
-      <input type="radio" value={option} onchange={bindFunction(option)} />
+      <input type="radio" value={option} onchange={bindFunction(option)} checked={form[bindPath] === option} />
       {labelPrefix}{option}{labelSuffix}
     </label>
   {/each}
@@ -220,21 +220,18 @@ usage: more complex.
     <fieldset>
         <legend>Suicidal idea</legend>
         <div class="flex items-center gap-4">
-            {@render radioGroup(['idea', 'plan', 'attempt'], (value) => form.suicidal.type = value)}
-            <!--
             {#each ['idea', 'plan', 'attempt'] as type}
                 <label>
-                    <input type="checkbox" bind:group={form.suicidal.type} />
+                    <input type="checkbox" value={type} bind:group={form.suicidal.type} />
                     {type}
                 </label>
             {/each}
-            -->
         </div>
 
         <div class="flex items-center gap-4">
             {#each ['hanging', 'poisoning', 'knife'] as method}
                 <label>
-                    <input type="checkbox" bind:group={form.suicidal.methods} />
+                    <input type="checkbox" value={method} bind:group={form.suicidal.methods} />
                     {method}
                 </label>
             {/each}
@@ -260,7 +257,7 @@ usage: more complex.
         <div class="flex items-center gap-4">
             {#each ['idea', 'plan', 'attempt'] as type}
                 <label>
-                    <input type="checkbox" bind:group={form.homocidal.type} />
+                    <input type="checkbox" value={type} bind:group={form.homocidal.type} />
                     {type}
                 </label>
             {/each}
@@ -269,4 +266,9 @@ usage: more complex.
 
     <h3>Interpersonal Relations</h3>
 </form>
+
+<pre class="p-4 bg-gray-100 text-gray-900 rounded">
+{JSON.stringify(form, null, 2)}
+</pre>
+
 </article>

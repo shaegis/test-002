@@ -122,21 +122,25 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 -->
 
 {#snippet radioGroup(name = '', options, bindFunction, labelPrefix = '', labelSuffix = '')}
-  {#each options as option}
-    <label>
-      <input type="radio" value={option} name={name} checked={form.occursIn === option} onchange={() => bindFunction(option)} />
-      {labelPrefix}{option}{labelSuffix}
-    </label>
-  {/each}
+    <div class="flex items-center gap-4">
+        {#each options as option}
+          <label>
+            <input type="radio" value={option} name={name} checked={form.occursIn === option} onchange={() => bindFunction(option)} />
+            {labelPrefix}{option}{labelSuffix}
+          </label>
+        {/each}
+    </div>
 {/snippet}
 
 {#snippet checkboxGroup(options, bindFunction, currentValues,  labelPrefix = '', labelSuffix = '')}
-    {#each options as option}
-        <label>
-            <input type="checkbox" value={option} checked={currentValues.includes(option)} onchange={(e) => bindFunction(option, e.target.checked)} />
-            {labelPrefix}{option}{labelSuffix}
-        </label>
-    {/each}
+    <div class="flex items-center gap-4">
+        {#each options as option}
+            <label>
+                <input type="checkbox" value={option} checked={currentValues.includes(option)} onchange={(e) => bindFunction(option, e.target.checked)} />
+                {labelPrefix}{option}{labelSuffix}
+            </label>
+        {/each}
+    </div>
 {/snippet}
 
 
@@ -164,7 +168,6 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 
     <fieldset>
         <legend>mainly occures in/at</legend>
-        <div class="flex items-center gap-4">
             {@render radioGroup("occursIn", timePeriods, (value) => form.occursIn = value, "", "")}
         <!--
             <RadioGroup options={timePeriods} bind:group={from.occursIn} /> Fail to use Component d/t bind:...
@@ -175,7 +178,6 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
                 </label>
             {/each}
         -->
-        </div>
     </fieldset>
 
     <fieldset>
@@ -217,7 +219,6 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 
     <fieldset>
         <legend>Suicidal idea</legend>
-        <div class="flex items-center gap-4">
             {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {form.suicidal.type = updateArray(form.suicidal.type, value, checked);}, form.suicidal.type)}
             <!--
             {#each ['idea', 'plan', 'attempt'] as type}
@@ -227,7 +228,6 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
                 </label>
             {/each}
             -->
-        </div>
 
         <div class="flex items-center gap-4">
             {@render checkboxGroup(['hanging', 'poisoning', 'knife'], (value, checked) => {form.suicidal.method = updateArray(form.suicidal.method, value, checked);}, form.suicidal.method)}
@@ -256,7 +256,6 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 
     <fieldset>
         <legend>Homocidal idea</legend>
-        <div class="flex items-center gap-4">
             {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {form.homocidal.type = updateArray(form.homocidal.type, value, checked);}, form.homocidal.type)}
             <!--
             {#each ['idea', 'plan', 'attempt'] as type}
@@ -266,7 +265,6 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
                 </label>
             {/each}
             -->
-        </div>
     </fieldset>
 
     <h3>Interpersonal Relations</h3>

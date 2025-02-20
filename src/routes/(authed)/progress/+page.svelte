@@ -53,29 +53,43 @@
     const timePeriods = ['awake', 'morning', 'noon', 'afternoon', 'dusk', 'evening', 'night', 'before bed', 'sleep'];
     const sxProgress = ['persist', 'aggravated', 'improved', 'resolved'];
 
-    let form = $state({
-        psychological: {} as Record<string, string>,
-        somatic: {} as Record<string, string>,
-        occursIn: '',
+    interface FormData {
+        psychological: Record<string, string>;
+        somatic: Record<string, string>;
+        occursIn: string;
         attack: {
-            type: '',
-            frequency: '',
-            unit: '',
-            intensity: ''
-        },
+            type: string;
+            frequency: string;
+            unit: string;
+            intensity: string;
+        };
         suicidal: {
-            type: [] as string[],
-            method: [] as string[],
-            otherMethod: '',
+            type: string[];
+            method: string[];
+            otherMethod: string;
             when: {
-                amount: '',
-                unit: ''
-            }
-        },
+                amount: string;
+                unit: string;
+            };
+        };
         homocidal: {
-            type: [] as string[]
-        },
-    });
+            type: string[];
+        };
+    }
+
+    interface Symptom {
+        name: string;
+        label: string;
+    }
+
+    let form = $state<FormData>({
+        psychological: {},
+        somatic: {},
+        occursIn: '',
+        attack: { type: '', frequency: '', unit: '', intensity: '' },
+        suicidal: { type: [], method: [], otherMethod: '', when: { amount: '', unit: ''} },
+        homocidal: { type: [] },
+    })
 
     function updateArray(stateArray: string[], value: string, checked: boolean): string[] {
             if (checked) {
@@ -86,7 +100,7 @@
         }
 </script>
 
-{#snippet symptoms(symptom, symptomGroup)}
+{#snippet symptoms(symptom: Symptom, symptomGroup: 'psychological' | 'somatic')}
     <div class="flex items-center gap-4">
         <span>{symptom.label}</span>
         {#each options as option}
@@ -121,18 +135,18 @@ usage: {@render radioGroup(timePeriods, form.occursIn)}
 usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 -->
 
-{#snippet radioGroup(name = '', options, bindFunction, labelPrefix = '', labelSuffix = '')}
-    <div class="flex items-center gap-4">
+{#snippet radioGroup(name: string = '', options: string[], bindFunction: (value: string) => void, currentValue: string, labelPrefix: string = '', labelSuffix: string = '', className: string = 'flex items-center gap-4')}
+    <div class={className}>
         {#each options as option}
           <label>
-            <input type="radio" value={option} name={name} checked={form.occursIn === option} onchange={() => bindFunction(option)} />
+            <input type="radio" value={option} name={name} checked={currentValue === option} onchange={() => bindFunction(option)} />
             {labelPrefix}{option}{labelSuffix}
           </label>
         {/each}
     </div>
 {/snippet}
 
-{#snippet checkboxGroup(options, bindFunction, currentValues,  labelPrefix = '', labelSuffix = '')}
+{#snippet checkboxGroup(options: string[], bindFunction: (value: string, checked: boolean) => void, currentValues: string[],  labelPrefix: string = '', labelSuffix: string = '')}
     <div class="flex items-center gap-4">
         {#each options as option}
             <label>
@@ -168,7 +182,7 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 
     <fieldset>
         <legend>mainly occures in/at</legend>
-            {@render radioGroup("occursIn", timePeriods, (value) => form.occursIn = value, "", "")}
+            {@render radioGroup("occursIn", timePeriods, (value) => form.occursIn = value, form.occursIn)}
         <!--
             <RadioGroup options={timePeriods} bind:group={from.occursIn} /> Fail to use Component d/t bind:...
             {#each timePeriods as period}
@@ -183,7 +197,7 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
     <fieldset>
         <legend>Attack</legend>
         <div class="flex items-center gap-4">
-            {@render radioGroup("attackType", sxProgress, (value) => form.attack.type = value, "", "")}
+            {@render radioGroup("attackType", sxProgress, (value) => form.attack.type = value, form.attack.type, "", "", "space-x-2")}
             <!--
             {#each sxProgress as progress}
                 <label>
@@ -193,10 +207,9 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
             {/each}
             -->
 
-            <input
-                type="number" bind:value={form.attack.frequency} placeholder="times" />
+            <input type="number" bind:value={form.attack.frequency} placeholder="times" />
 
-            {@render radioGroup("attackUnit", ['day', 'week'], (value) => form.attack.unit = value, "/", "")}
+            {@render radioGroup("attackUnit", ['day', 'week'], (value) => form.attack.unit = value, form.attack.unit,  "/", "", "space-x-2")}
             <!--
             {#each ['day', 'week'] as unit}
                 <label>
@@ -244,13 +257,15 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 
         <div class="flex items-center gap-4">
             <input type="number" bind:value={form.suicidal.when.amount} placeholder="1 day/month/year ago" />
-            <!-- {@render radioGroup("suicidalUnit", ['days', 'months', 'years'], (value) => form.suicidal.when.unit = value, "", " ago")} -->
+            {@render radioGroup("suicidalUnit", ['days', 'months', 'years'], (value) => form.suicidal.when.unit = value, form.suicidal.when.unit, "", " ago", "space-x-2")}
+            <!--
             {#each ['days', 'months', 'years'] as unit}
                 <label>
                     <input type="radio" value={unit} bind:group={form.suicidal.when.unit} />
                     {unit} ago
                 </label>
             {/each}
+            -->
         </div>
     </fieldset>
 

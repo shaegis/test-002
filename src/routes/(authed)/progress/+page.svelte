@@ -65,7 +65,7 @@
         },
         suicidal: {
             type: [] as string[],
-            methods: [] as string[],
+            method: [] as string[],
             otherMethod: '',
             when: {
                 amount: '',
@@ -76,6 +76,14 @@
             type: [] as string[]
         },
     });
+
+    function updateArray(stateArray: string[], value: string, checked: boolean): string[] {
+            if (checked) {
+                return [...stateArray, value];
+            } else {
+                return stateArray.filter(item => item !== value);
+            }
+        }
 </script>
 
 {#snippet symptoms(symptom, symptomGroup)}
@@ -113,34 +121,24 @@ usage: {@render radioGroup(timePeriods, form.occursIn)}
 usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 -->
 
-{#snippet radioGroup(options, bindFunction, labelPrefix = '', labelSuffix = '')}
+{#snippet radioGroup(name = '', options, bindFunction, labelPrefix = '', labelSuffix = '')}
   {#each options as option}
     <label>
-      <input type="radio" value={option} onchange={bindFunction(option)} checked={form[bindPath] === option} />
+      <input type="radio" value={option} name={name} checked={form.occursIn === option} onchange={() => bindFunction(option)} />
       {labelPrefix}{option}{labelSuffix}
     </label>
   {/each}
 {/snippet}
 
-<!--
-{#snippet checkboxGroup(options, bindFunction, labelPrefix = '', labelSuffix = '')}
+{#snippet checkboxGroup(options, bindFunction, currentValues,  labelPrefix = '', labelSuffix = '')}
     {#each options as option}
         <label>
-            <input type="checkbox" value={option} onchange={bindFunction(option)} />
+            <input type="checkbox" value={option} checked={currentValues.includes(option)} onchange={(e) => bindFunction(option, e.target.checked)} />
             {labelPrefix}{option}{labelSuffix}
         </label>
     {/each}
 {/snippet}
 
-usage: more complex.
-{@render checkboxGroup(['idea', 'plan', 'attempt'], (value, event) => {
-    if (event.target.checked) {
-        form.suicidal.type = [...form.suicidal.type, value]; // Add if checked
-    } else {
-        form.suicidal.type = form.suicidal.type.filter(item => item !== value); // Remove if unchecked
-    }
-})}
--->
 
 <article class="prose">
 <h1>{data.user.username} Progress Notes</h1>
@@ -167,7 +165,7 @@ usage: more complex.
     <fieldset>
         <legend>mainly occures in/at</legend>
         <div class="flex items-center gap-4">
-            {@render radioGroup(timePeriods, (value) => form.occursIn = value)}
+            {@render radioGroup("occursIn", timePeriods, (value) => form.occursIn = value, "", "")}
         <!--
             <RadioGroup options={timePeriods} bind:group={from.occursIn} /> Fail to use Component d/t bind:...
             {#each timePeriods as period}
@@ -183,7 +181,7 @@ usage: more complex.
     <fieldset>
         <legend>Attack</legend>
         <div class="flex items-center gap-4">
-            {@render radioGroup(sxProgress, (value) => form.attack.type = value)}
+            {@render radioGroup("attackType", sxProgress, (value) => form.attack.type = value, "", "")}
             <!--
             {#each sxProgress as progress}
                 <label>
@@ -196,7 +194,7 @@ usage: more complex.
             <input
                 type="number" bind:value={form.attack.frequency} placeholder="times" />
 
-            {@render radioGroup(['day', 'week'], (value) => form.attack.unit = value, "/")}
+            {@render radioGroup("attackUnit", ['day', 'week'], (value) => form.attack.unit = value, "/", "")}
             <!--
             {#each ['day', 'week'] as unit}
                 <label>
@@ -220,47 +218,54 @@ usage: more complex.
     <fieldset>
         <legend>Suicidal idea</legend>
         <div class="flex items-center gap-4">
+            {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {form.suicidal.type = updateArray(form.suicidal.type, value, checked);}, form.suicidal.type)}
+            <!--
             {#each ['idea', 'plan', 'attempt'] as type}
                 <label>
                     <input type="checkbox" value={type} bind:group={form.suicidal.type} />
                     {type}
                 </label>
             {/each}
+            -->
         </div>
 
         <div class="flex items-center gap-4">
+            {@render checkboxGroup(['hanging', 'poisoning', 'knife'], (value, checked) => {form.suicidal.method = updateArray(form.suicidal.method, value, checked);}, form.suicidal.method)}
+            <!--
             {#each ['hanging', 'poisoning', 'knife'] as method}
                 <label>
                     <input type="checkbox" value={method} bind:group={form.suicidal.methods} />
                     {method}
                 </label>
             {/each}
+            -->
             <input type="text" bind:value={form.suicidal.otherMethod} placeholder="Other method" />
         </div>
 
         <div class="flex items-center gap-4">
             <input type="number" bind:value={form.suicidal.when.amount} placeholder="1 day/month/year ago" />
-            {@render radioGroup(['days', 'months', 'years'], (value) => form.suicidal.when.unit = value, "", " ago")}
-            <!--
+            <!-- {@render radioGroup("suicidalUnit", ['days', 'months', 'years'], (value) => form.suicidal.when.unit = value, "", " ago")} -->
             {#each ['days', 'months', 'years'] as unit}
                 <label>
                     <input type="radio" value={unit} bind:group={form.suicidal.when.unit} />
                     {unit} ago
                 </label>
             {/each}
-            -->
         </div>
     </fieldset>
 
     <fieldset>
         <legend>Homocidal idea</legend>
         <div class="flex items-center gap-4">
+            {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {form.homocidal.type = updateArray(form.homocidal.type, value, checked);}, form.homocidal.type)}
+            <!--
             {#each ['idea', 'plan', 'attempt'] as type}
                 <label>
                     <input type="checkbox" value={type} bind:group={form.homocidal.type} />
                     {type}
                 </label>
             {/each}
+            -->
         </div>
     </fieldset>
 

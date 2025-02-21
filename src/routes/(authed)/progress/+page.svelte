@@ -42,7 +42,7 @@
         { value: 'positive', label: '+' },
         { value: 'neutral', label: '+/-' },
         { value: 'improved', label: 'improved' },
-        { value: 'aggrevated', label: 'aggrevated' }
+        { value: 'aggravated', label: 'aggravated' }
     ];
 
     const percentRange = Array.from({ length: 10 }, (_, i) => ({
@@ -53,7 +53,7 @@
     const timePeriods = ['awake', 'morning', 'noon', 'afternoon', 'dusk', 'evening', 'night', 'before bed', 'sleep'];
     const sxProgress = ['persist', 'aggravated', 'improved', 'resolved'];
 
-    interface FormData {
+    interface SymptomData {
         psychological: Record<string, string>;
         somatic: Record<string, string>;
         occursIn: string;
@@ -77,18 +77,59 @@
         };
     }
 
-    interface Symptom {
+    interface SymptomItemsData {
         name: string;
         label: string;
     }
 
-    let form = $state<FormData>({
+    let symptom = $state<SymptomData>({
         psychological: {},
         somatic: {},
         occursIn: '',
         attack: { type: '', frequency: '', unit: '', intensity: '' },
         suicidal: { type: [], method: [], otherMethod: '', when: { amount: '', unit: ''} },
         homocidal: { type: [] },
+    })
+
+    interface InterPersonalData {
+        relationType: string[];
+        otherRelationType: string;
+        frequency: string;
+        unit: string;
+        method: string[];
+        otherMethod: string;
+        withdrawal: string;
+    }
+
+    let interPersonal = $state<InterPersonalData>({
+        relationType: [], otherRelationType: '', frequency: '', unit: '', method: [], otherMethod: '', withdrawal: ''
+    })
+
+    interface LeisureNhobbiesData {
+        noLeisure: boolean;
+        leisure: string[];
+        noPleasure: boolean;
+        pleasure: string[];
+        noHobby: boolean;
+        hobby: string[];
+    }
+
+    let leisureNhobbies = $state<LeisureNhobbiesData>({
+        noLeisure: false, leisure: [], noPleasure: false, pleasure: [], noHobby: false, hobby: []
+    })
+
+    interface AlcoholData {
+        alcoholicBeverage: string[];
+        progress: string;
+        amount: string;
+        frequency: string;
+        unit: string;
+        otherType: string[];
+        alcoholicSnack: string[];
+    }
+
+    let alcohol = $state<AlcoholData>({
+        alcoholicBeverage: [], progress: '', amount: '', frequency: '', unit: '', otherType: [], alcohokicSnack: []
     })
 
     function updateArray(stateArray: string[], value: string, checked: boolean): string[] {
@@ -100,40 +141,22 @@
         }
 </script>
 
-{#snippet symptoms(symptom: Symptom, symptomGroup: 'psychological' | 'somatic')}
-    <div class="flex items-center gap-4">
-        <span>{symptom.label}</span>
-        {#each options as option}
-            <label>
-                <input type="radio" value={option.value} bind:group={form[symptomGroup][symptom.name]} />
-                {option.label}
-            </label>
+{#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: 'psychological' | 'somatic')}
+    <fieldset>
+        <legend>{symptomGroup == 'psychological' ? 'Psychological Symptoms' : 'Somatic Symptoms'}</legend>
+        {#each symptomItems as symptomItem}
+            <div class="flex items-center gap-4">
+                <span>{symptomItem.label}</span>
+                {#each options as option}
+                    <label>
+                        <input type="radio" value={option.value} bind:group={symptom[symptomGroup][symptomItem.name]} />
+                        {option.label}
+                    </label>
+                {/each}
+            </div>
         {/each}
-    </div>
+    </fieldset>
 {/snippet}
-
-<!--
-{#snippet radioGroup(options, bindTo, labelPrefix = '')}
-    {#each options as option}
-        <label>
-            <input type="radio" value={option} bind:group={bindTo} />
-            {labelPrefix}{option}
-        </label>
-    {/each}
-{/snippet}
-usage: {@render radioGroup(timePeriods, form.occursIn)}
-첫 번째 방법은 부모의 상태를 직접 업데이트하는 함수를 통해 우회하고 있는 반면, 두 번째 방법은 스니펫 매개변수에 직접 양방향 바인딩을 시도하여 불변성 규칙에 위배되기 때문에 에러가 발생합니다.
-
-{#snippet checkboxGroup(options, bindTo)}
-    {#each options as option}
-        <label>
-            <input type="checkbox" value={option} bind:group={bindTo} />
-            {option}
-        </label>
-    {/each}
-{/snippet}
-usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
--->
 
 {#snippet radioGroup(name: string = '', options: string[], bindFunction: (value: string) => void, currentValue: string, labelPrefix: string = '', labelSuffix: string = '', className: string = 'flex items-center gap-4')}
     <div class={className}>
@@ -166,61 +189,25 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 <form>
 <h2>Subjective</h2>
     <h3>Symptoms</h3>
-    <fieldset>
-        <legend>Psychological Symptoms</legend>
-        {#each psychologicalSymptoms as symptom}
-            {@render symptoms(symptom, "psychological")}
-       {/each}
-    </fieldset>
-
-    <fieldset>
-        <legend>Somatic Symptoms</legend>
-        {#each somaticSymptoms as symptom}
-            {@render symptoms(symptom, "somatic")}
-        {/each}
-    </fieldset>
+    {@render symptomList(psychologicalSymptoms, "psychological")}
+    {@render symptomList(somaticSymptoms, "somatic")}
 
     <fieldset>
         <legend>mainly occures in/at</legend>
-            {@render radioGroup("occursIn", timePeriods, (value) => form.occursIn = value, form.occursIn)}
-        <!--
-            <RadioGroup options={timePeriods} bind:group={from.occursIn} /> Fail to use Component d/t bind:...
-            {#each timePeriods as period}
-                <label>
-                    <input type="radio" value={period} bind:group={form.occursIn} />
-                    {period}
-                </label>
-            {/each}
-        -->
+            {@render radioGroup("occursIn", timePeriods, (value) => symptom.occursIn = value, symptom.occursIn)}
     </fieldset>
 
     <fieldset>
         <legend>Attack</legend>
         <div class="flex items-center gap-4">
-            {@render radioGroup("attackType", sxProgress, (value) => form.attack.type = value, form.attack.type, "", "", "space-x-2")}
-            <!--
-            {#each sxProgress as progress}
-                <label>
-                    <input type="radio" value={progress} bind:group={form.attack.type} />
-                    {progress}
-                </label>
-            {/each}
-            -->
+            {@render radioGroup("attackType", sxProgress, (value) => symptom.attack.type = value, symptom.attack.type, "", "", "space-x-2")}
 
-            <input type="number" bind:value={form.attack.frequency} placeholder="times" />
+            <input type="number" bind:value={symptom.attack.frequency} placeholder="times" />
 
-            {@render radioGroup("attackUnit", ['day', 'week'], (value) => form.attack.unit = value, form.attack.unit,  "/", "", "space-x-2")}
-            <!--
-            {#each ['day', 'week'] as unit}
-                <label>
-                    <input type="radio" value={unit} bind:group={form.attack.unit} />
-                    / {unit}
-                </label>
-            {/each}
-            -->
+            {@render radioGroup("attackUnit", ['day', 'week'], (value) => symptom.attack.unit = value, symptom.attack.unit,  "/", "", "space-x-2")}
 
             <label>
-                <select bind:value={form.attack.intensity}>
+                <select bind:value={symptom.attack.intensity}>
                     {#each percentRange as pRange}
                         <option value={pRange.value}>{pRange.label}</option>
                     {/each}
@@ -232,61 +219,97 @@ usage: {@render checkboxGroup(['idea', 'plan', 'attempt'], form.suicidal.type)}
 
     <fieldset>
         <legend>Suicidal idea</legend>
-            {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {form.suicidal.type = updateArray(form.suicidal.type, value, checked);}, form.suicidal.type)}
-            <!--
-            {#each ['idea', 'plan', 'attempt'] as type}
-                <label>
-                    <input type="checkbox" value={type} bind:group={form.suicidal.type} />
-                    {type}
-                </label>
-            {/each}
-            -->
+            {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {symptom.suicidal.type = updateArray(symptom.suicidal.type, value, checked);}, symptom.suicidal.type)}
 
         <div class="flex items-center gap-4">
-            {@render checkboxGroup(['hanging', 'poisoning', 'knife'], (value, checked) => {form.suicidal.method = updateArray(form.suicidal.method, value, checked);}, form.suicidal.method)}
-            <!--
-            {#each ['hanging', 'poisoning', 'knife'] as method}
-                <label>
-                    <input type="checkbox" value={method} bind:group={form.suicidal.methods} />
-                    {method}
-                </label>
-            {/each}
-            -->
-            <input type="text" bind:value={form.suicidal.otherMethod} placeholder="Other method" />
+            {@render checkboxGroup(['hanging', 'poisoning', 'knife'], (value, checked) => {symptom.suicidal.method = updateArray(symptom.suicidal.method, value, checked);}, symptom.suicidal.method)}
+            <input type="text" bind:value={symptom.suicidal.otherMethod} placeholder="Other method" />
         </div>
 
         <div class="flex items-center gap-4">
-            <input type="number" bind:value={form.suicidal.when.amount} placeholder="1 day/month/year ago" />
-            {@render radioGroup("suicidalUnit", ['days', 'months', 'years'], (value) => form.suicidal.when.unit = value, form.suicidal.when.unit, "", " ago", "space-x-2")}
-            <!--
-            {#each ['days', 'months', 'years'] as unit}
-                <label>
-                    <input type="radio" value={unit} bind:group={form.suicidal.when.unit} />
-                    {unit} ago
-                </label>
-            {/each}
-            -->
+            <input type="number" bind:value={symptom.suicidal.when.amount} placeholder="1 day/month/year ago" />
+            {@render radioGroup("suicidalUnit", ['days', 'months', 'years'], (value) => symptom.suicidal.when.unit = value, symptom.suicidal.when.unit, "", " ago", "space-x-2")}
         </div>
     </fieldset>
 
     <fieldset>
         <legend>Homocidal idea</legend>
-            {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {form.homocidal.type = updateArray(form.homocidal.type, value, checked);}, form.homocidal.type)}
-            <!--
-            {#each ['idea', 'plan', 'attempt'] as type}
-                <label>
-                    <input type="checkbox" value={type} bind:group={form.homocidal.type} />
-                    {type}
-                </label>
-            {/each}
-            -->
+            {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {symptom.homocidal.type = updateArray(symptom.homocidal.type, value, checked);}, symptom.homocidal.type)}
     </fieldset>
 
     <h3>Interpersonal Relations</h3>
+    <fieldset>
+        <legend>Relationship with</legend>
+        <div class="flex items-center gap-4">
+            {@render checkboxGroup(['social', 'friends', 'family', 'neighbor'], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value, checked);}, interPersonal.relationType, "", "", "space-x-2")}
+            <input type="text" bind:value={interPersonal.otherRelationType} placeholder="others" />
+            <input type="number" bind:value={interPersonal.frequency} placeholder="times" />
+            {@render radioGroup("interPersonalUnit", ['week', 'month'], (value) => interPersonal.unit = value, interPersonal.unit, "/", "", "space-x-2")}
+        </div>
+        <legend>How to play</legend>
+        <div class="flex items-center gap-4">
+            {@render checkboxGroup(['talking', 'eating', 'drinking', 'traveling'], (value, checked) => {interPersonal.method = updateArray(interPersonal.method, value, checked);}, interPersonal.method, "", "", "")}
+            <input type="text" bind:value={interPersonal.otherMethod} placeholder="others" />
+        </div>
+        <legend>Withdrawal</legend>
+            {@render radioGroup("interPersonalWithdrawal", ['social withdrawal', 'no relationship'], (value) => interPersonal.withdrawal= value, interPersonal.withdrawal, "", "", "space-x-2")}
+    </fieldset>
+
+    <h3>Leisure & Hobbies</h3>
+    <fieldset>
+        <legend>Leisure & Hobbies</legend>
+        <div class="flex items-center gap-4">
+            <label>No Leisure <input type="checkbox" name="noLeisure" bind:checked={leisureNhobbies.noLeisure} /></label>
+            <input type="text" bind:value={leisureNhobbies.leisure} placeholder="leisures" disabled={leisureNhobbies.noLeisure} />
+        </div>
+        <div class="flex items-center gap-4">
+            <label>No Pleasure <input type="checkbox" name="noPleasure" bind:checked={leisureNhobbies.noPleasure} /></label>
+            <input type="text" bind:value={leisureNhobbies.pleasure} placeholder="pleasures" disabled={leisureNhobbies.noPleasure} />
+        </div>
+        <div class="flex items-center gap-4">
+            <label>No Hobby <input type="checkbox" name="noHobby" bind:checked={leisureNhobbies.noHobby} /></label>
+            <input type="text" bind:value={leisureNhobbies.hobby} placeholder="hobbies" disabled={leisureNhobbies.noHobby} />
+        </div>
+    </fieldset>
+    <!--
+        <div class="flex items-center gap-4">
+            <label for="leisure">leisure<input type="checkbox" name="leisure" bind:checked={leisureNhobbies.noLeisure} />no leisure</label>
+            <input type="text" bind:value={leisureNhobbies.leisure} placeholder="leisures" />
+        </div>
+        <div class="flex items-center gap-4">
+            <label for="pleasure">pleasure<input type="checkbox" name="pleasure" bind:checked={leisureNhobbies.noPleasure} />no pleasure</label>
+            <input type="text" bind:value={leisureNhobbies.pleasure} placeholder="pleasure" />
+        </div>
+        <div class="flex items-center gap-4">
+            <label for="hobby">pleasure<input type="checkbox" name="hobby" bind:checked={leisureNhobbies.noHobby} />no hobby</label>
+            <input type="text" bind:value={leisureNhobbies.hobby} placeholder="hobbies" />
+        </div>
+    </fieldset>
+    -->
+
+    <h3>Alcohol</h3>
+    <fieldset>
+        <legend>Alcoholic beverage</legend>
+            {@render checkboxGroup(['소주', 'beer', 'wine', '양주', '막걸리', '폭탄주', 'mix'], (value, checked) => {alcohol.alcoholicBeverage = updateArray(alcohol.alcoholicBeverage, value, checked);}, alcohol.alcoholicBeverage, "", "", "", "")}
+        <legend>amount & frequency</legend>
+            <input type="text" bind:value={alcohol.amount} placeholder="amount" /><label>/one time</label><br>
+        <div class="flex items-center gap-4">
+            <input type="text" bind:value={alcohol.frequency} placeholder="times" />
+            {@render radioGroup("alcoholUnit", ['day', 'week', 'month'], (value) => alcohol.unit = value, alcohol.unit, "/", "", "space-x-2")}
+        </div>
+        <span>changed over time:</span>
+            {@render radioGroup("alcoholProgress", ['persist', 'increase', 'neutral', 'decrease'], (value) => alcohol.progress = value, alcohol.progress, "", "", "")}
+
+        <legend>Alcohol snack</legend>
+            {@render checkboxGroup(['안주 없음', 'meat', 'fruits', '반찬', '...'], (value, checked) => {alcohol.alcohokicSnack = updateArray(alcohol.alcohokicSnack, value, checked);}, alcohol.alcohokicSnack, "", "", "")}
+    </fieldset>
 </form>
 
 <pre class="p-4 bg-gray-100 text-gray-900 rounded">
-{JSON.stringify(form, null, 2)}
+{JSON.stringify(symptom, null, 2)}
+{JSON.stringify(interPersonal, null, 2)}
+{JSON.stringify(leisureNhobbies, null, 2)}
+{JSON.stringify(alcohol, null, 2)}
 </pre>
 
 </article>

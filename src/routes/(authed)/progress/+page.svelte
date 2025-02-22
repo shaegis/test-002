@@ -107,15 +107,15 @@
 
     interface LeisureNhobbiesData {
         noLeisure: boolean;
-        leisure: string[];
+        leisure: string;
         noPleasure: boolean;
-        pleasure: string[];
+        pleasure: string;
         noHobby: boolean;
-        hobby: string[];
+        hobby: string;
     }
 
     let leisureNhobbies = $state<LeisureNhobbiesData>({
-        noLeisure: false, leisure: [], noPleasure: false, pleasure: [], noHobby: false, hobby: []
+        noLeisure: false, leisure: '', noPleasure: false, pleasure: '', noHobby: false, hobby: ''
     })
 
     interface AlcoholData {
@@ -157,6 +157,29 @@
         {/each}
     </fieldset>
 {/snippet}
+
+<!--
+{#snippet inputGroup(type: 'radio' | 'checkbox', name: string = '', options: string[], bindFunction: (value: string, checked: boolean | string) => void, currentValues: string[] | string, className: string = 'flex items-center gap-4')}
+    <div class={className}>
+        {#each options as option}
+            <label>
+                <input 
+                    type={type} 
+                    value={option} 
+                    name={name} 
+                    checked={type === 'radio' ? currentValues === option : (currentValues as string[]).includes(option)} 
+                    onchange={(e) => bindFunction(option, type === 'radio' ? option : e.target.checked)} 
+                />
+                {option}
+            </label>
+        {/each}
+    </div>
+{/snippet}
+
+// 사용 예시
+{@render inputGroup('checkbox', 'relationType', ['social', 'friends', 'family', 'neighbor'], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value as boolean);}, interPersonal.relationType)}
+{@render inputGroup('radio', 'interPersonalWithdrawalType', ['social withdrawal', 'no relationship'], (value) => interPersonal.withdrawalType = value as string, interPersonal.withdrawalType)}
+-->
 
 {#snippet radioGroup(name: string = '', options: string[], bindFunction: (value: string) => void, currentValue: string, labelPrefix: string = '', labelSuffix: string = '', className: string = 'flex items-center gap-4')}
     <div class={className}>
@@ -271,28 +294,13 @@
             <input type="text" bind:value={leisureNhobbies.hobby} placeholder="hobbies" disabled={leisureNhobbies.noHobby} />
         </div>
     </fieldset>
-    <!--
-        <div class="flex items-center gap-4">
-            <label for="leisure">leisure<input type="checkbox" name="leisure" bind:checked={leisureNhobbies.noLeisure} />no leisure</label>
-            <input type="text" bind:value={leisureNhobbies.leisure} placeholder="leisures" />
-        </div>
-        <div class="flex items-center gap-4">
-            <label for="pleasure">pleasure<input type="checkbox" name="pleasure" bind:checked={leisureNhobbies.noPleasure} />no pleasure</label>
-            <input type="text" bind:value={leisureNhobbies.pleasure} placeholder="pleasure" />
-        </div>
-        <div class="flex items-center gap-4">
-            <label for="hobby">pleasure<input type="checkbox" name="hobby" bind:checked={leisureNhobbies.noHobby} />no hobby</label>
-            <input type="text" bind:value={leisureNhobbies.hobby} placeholder="hobbies" />
-        </div>
-    </fieldset>
-    -->
 
     <h3>Alcohol</h3>
     <fieldset>
         <legend>Alcoholic beverage</legend>
             {@render checkboxGroup(['소주', 'beer', 'wine', '양주', '막걸리', '폭탄주', 'mix'], (value, checked) => {alcohol.alcoholicBeverage = updateArray(alcohol.alcoholicBeverage, value, checked);}, alcohol.alcoholicBeverage, "", "", "", "")}
         <legend>amount & frequency</legend>
-            <input type="text" bind:value={alcohol.amount} placeholder="amount" /><label>/one time</label><br>
+            <input type="text" name="alcoholAmount" bind:value={alcohol.amount} placeholder="amount" /><label for="alcoholAmount">/one time</label><br>
         <div class="flex items-center gap-4">
             <input type="text" bind:value={alcohol.frequency} placeholder="times" />
             {@render radioGroup("alcoholUnit", ['day', 'week', 'month'], (value) => alcohol.unit = value, alcohol.unit, "/", "", "space-x-2")}

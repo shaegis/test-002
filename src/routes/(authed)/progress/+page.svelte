@@ -1,48 +1,48 @@
-<script lang='ts'>
-    import type { PageServerData } from './$types';
-//    import RadioGroup from './RadioGroup.svelte';
+<script lang="ts">
+    import type { PageServerData } from "./$types";
+//    import RadioGroup from "./RadioGroup.svelte";
 
     let { data }: { data: PageServerData } = $props();
 
     const psychologicalSymptoms = [
         // pychological
-        { name: 'depressive', label: 'depressive' },
-        { name: 'lack_of_drive', label: 'lack of drive' },
-        { name: 'low_energy', label: 'low energy' },
-        { name: 'alxithymic', label: 'alexithymic' },
-        { name: 'foggy_groggy', label: 'foggy/groggy' },
-        { name: 'irritable', label: 'irritable' },
-        { name: 'anger', label: 'anger' },
-        { name: 'impulsive', label: 'impulsive' },
+        { name: "depressive", label: "depressive" },
+        { name: "lack_of_drive", label: "lack of drive" },
+        { name: "low_energy", label: "low energy" },
+        { name: "alxithymic", label: "alexithymic" },
+        { name: "foggy_groggy", label: "foggy/groggy" },
+        { name: "irritable", label: "irritable" },
+        { name: "anger", label: "anger" },
+        { name: "impulsive", label: "impulsive" },
     ];
 
     const somaticSymptoms = [
         // autonomic
-        { name: 'heating_sense', label: 'heating sense' },
-        { name: 'sweating', label: 'sweating' },
-        { name: 'impending_death', label: 'impending death' },
+        { name: "heating_sense", label: "heating sense" },
+        { name: "sweating", label: "sweating" },
+        { name: "impending_death", label: "impending death" },
         // head & neck
-        { name: 'concentration', label: 'concentration' },
-        { name: 'headacheMigraine', label: 'headache/migraine' },
-        { name: 'blepharospasm', label: 'blepharospasm' },
-        { name: 'tinnitus', label: 'tinnitus' },
-        { name: 'vertigo', label: 'vertigo' },
-        { name: 'globus', label: 'globus' },
+        { name: "concentration", label: "concentration" },
+        { name: "headacheMigraine", label: "headache/migraine" },
+        { name: "blepharospasm", label: "blepharospasm" },
+        { name: "tinnitus", label: "tinnitus" },
+        { name: "vertigo", label: "vertigo" },
+        { name: "globus", label: "globus" },
         // chest
-        { name: 'palpitation', label: 'palpitation' },
-        { name: 'heaviness', label: 'heaviness' },
-        { name: 'dyspnea', label: 'dyspnea' },
+        { name: "palpitation", label: "palpitation" },
+        { name: "heaviness", label: "heaviness" },
+        { name: "dyspnea", label: "dyspnea" },
         // abdomen
-        { name: 'nausea', label: 'nausea' },
-        { name: 'indigestion', label: 'indigestion' },
+        { name: "nausea", label: "nausea" },
+        { name: "indigestion", label: "indigestion" },
     ];
 
     const options = [
-        { value: 'negative', label: '-' },
-        { value: 'positive', label: '+' },
-        { value: 'neutral', label: '+/-' },
-        { value: 'improved', label: 'improved' },
-        { value: 'aggravated', label: 'aggravated' }
+        { value: "negative", label: "-" },
+        { value: "positive", label: "+" },
+        { value: "neutral", label: "+/-" },
+        { value: "improved", label: "improved" },
+        { value: "aggravated", label: "aggravated" }
     ];
 
     const percentRange = Array.from({ length: 10 }, (_, i) => ({
@@ -50,8 +50,8 @@
         label: `${90 - i * 10}`
     }));
 
-    const timePeriods = ['awake', 'morning', 'noon', 'afternoon', 'dusk', 'evening', 'night', 'before bed', 'sleep'];
-    const sxProgress = ['persist', 'aggravated', 'improved', 'resolved'];
+    const timePeriods = ["awake", "morning", "noon", "afternoon", "dusk", "evening", "night", "before bed", "sleep"];
+    const sxProgress = ["persist", "aggravated", "improved", "resolved"];
 
     interface SymptomData {
         psychological: Record<string, string>;
@@ -85,9 +85,9 @@
     let symptom = $state<SymptomData>({
         psychological: {},
         somatic: {},
-        occursIn: '',
-        attack: { type: '', frequency: '', unit: '', intensity: '' },
-        suicidal: { type: [], method: [], otherMethod: '', when: { amount: '', unit: ''} },
+        occursIn: "",
+        attack: { type: "", frequency: "", unit: "", intensity: "" },
+        suicidal: { type: [], method: [], otherMethod: "", when: { amount: "", unit: ""} },
         homocidal: { type: [] },
     })
 
@@ -102,7 +102,7 @@
     }
 
     let interPersonal = $state<InterPersonalData>({
-        relationType: [], otherRelationType: '', frequency: '', unit: '', method: [], otherMethod: '', withdrawal: ''
+        relationType: [], otherRelationType: "", frequency: "", unit: "", method: [], otherMethod: "", withdrawal: ""
     })
 
     interface LeisureNhobbiesData {
@@ -115,7 +115,7 @@
     }
 
     let leisureNhobbies = $state<LeisureNhobbiesData>({
-        noLeisure: false, leisure: '', noPleasure: false, pleasure: '', noHobby: false, hobby: ''
+        noLeisure: false, leisure: "", noPleasure: false, pleasure: "", noHobby: false, hobby: ""
     })
 
     interface AlcoholData {
@@ -125,11 +125,11 @@
         frequency: string;
         unit: string;
         otherType: string[];
-        alcoholicSnack: string[];
+        alcoholSnack: string[];
     }
 
     let alcohol = $state<AlcoholData>({
-        alcoholicBeverage: [], progress: '', amount: '', frequency: '', unit: '', otherType: [], alcohokicSnack: []
+        alcoholicBeverage: [], progress: "", amount: "", frequency: "", unit: "", otherType: [], alcoholSnack: []
     })
 
     function updateArray(stateArray: string[], value: string, checked: boolean): string[] {
@@ -141,9 +141,9 @@
         }
 </script>
 
-{#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: 'psychological' | 'somatic')}
+{#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: "psychological" | "somatic")}
     <fieldset>
-        <legend>{symptomGroup == 'psychological' ? 'Psychological Symptoms' : 'Somatic Symptoms'}</legend>
+        <legend>{symptomGroup == "psychological" ? "Psychological Symptoms" : "Somatic Symptoms"}</legend>
         {#each symptomItems as symptomItem}
             <div class="flex items-center gap-4">
                 <span>{symptomItem.label}</span>
@@ -158,8 +158,7 @@
     </fieldset>
 {/snippet}
 
-<!--
-{#snippet inputGroup(type: 'radio' | 'checkbox', name: string = '', options: string[], bindFunction: (value: string, checked: boolean | string) => void, currentValues: string[] | string, className: string = 'flex items-center gap-4')}
+{#snippet inputGroup(type: "radio" | "checkbox", name: string = "", options: string[], bindFunction: (value: string, checked: type extends "radio" ? string : boolean) => void, currentValues: string[] | string, labelPrefix: string = "", labelSuffix: string = "", className: string = "flex items-center gap-4")}
     <div class={className}>
         {#each options as option}
             <label>
@@ -167,21 +166,22 @@
                     type={type} 
                     value={option} 
                     name={name} 
-                    checked={type === 'radio' ? currentValues === option : (currentValues as string[]).includes(option)} 
-                    onchange={(e) => bindFunction(option, type === 'radio' ? option : e.target.checked)} 
+                    checked={type === "radio" ? currentValues === option : (currentValues as string[]).includes(option)} 
+                    onchange={(e) => bindFunction(option, type === "radio" ? option : e.target.checked as boolean)} 
                 />
-                {option}
+                {labelPrefix}{option}{labelSuffix}
             </label>
         {/each}
     </div>
 {/snippet}
+<!--
+{@render inputGroup('checkbox', 'relationType', ['social', 'friends', 'family', 'neighbor'], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value, checked);}, interPersonal.relationType, "", "", "space-x-2")}
+{@render inputGroup('checkbox', 'relationType', ['social', 'friends', 'family', 'neighbor'], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value, checked);}, interPersonal.relationType /* prefix, suffix, className omitted intentionally */)}
 
-// 사용 예시
-{@render inputGroup('checkbox', 'relationType', ['social', 'friends', 'family', 'neighbor'], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value as boolean);}, interPersonal.relationType)}
-{@render inputGroup('radio', 'interPersonalWithdrawalType', ['social withdrawal', 'no relationship'], (value) => interPersonal.withdrawalType = value as string, interPersonal.withdrawalType)}
+{@render inputGroup('radio', 'interPersonalWithdrawalType', ['social withdrawal', 'no relationship'], (value, checked) => {interPersonal.withdrawalType = checked;}, interPersonal.withdrawalType, "", " selected", "space-x-2")}
 -->
 
-{#snippet radioGroup(name: string = '', options: string[], bindFunction: (value: string) => void, currentValue: string, labelPrefix: string = '', labelSuffix: string = '', className: string = 'flex items-center gap-4')}
+{#snippet radioGroup(name: string = "", options: string[], bindFunction: (value: string) => void, currentValue: string, labelPrefix: string = "", labelSuffix: string = "", className: string = "flex items-center gap-4")}
     <div class={className}>
         {#each options as option}
           <label>
@@ -192,7 +192,7 @@
     </div>
 {/snippet}
 
-{#snippet checkboxGroup(options: string[], bindFunction: (value: string, checked: boolean) => void, currentValues: string[],  labelPrefix: string = '', labelSuffix: string = '')}
+{#snippet checkboxGroup(options: string[], bindFunction: (value: string, checked: boolean) => void, currentValues: string[],  labelPrefix: string = "", labelSuffix: string = "")}
     <div class="flex items-center gap-4">
         {#each options as option}
             <label>
@@ -217,17 +217,17 @@
 
     <fieldset>
         <legend>mainly occures in/at</legend>
-            {@render radioGroup("occursIn", timePeriods, (value) => symptom.occursIn = value, symptom.occursIn)}
+            {@render inputGroup("radio", "occursIn", timePeriods, (value, checked) => {symptom.occursIn = checked;}, symptom.occursIn)}
     </fieldset>
 
     <fieldset>
         <legend>Attack</legend>
         <div class="flex items-center gap-4">
-            {@render radioGroup("attackType", sxProgress, (value) => symptom.attack.type = value, symptom.attack.type, "", "", "space-x-2")}
+            {@render inputGroup("radio", "attackType", sxProgress, (value, checked) => {symptom.attack.type = checked;}, symptom.attack.type)}
 
             <input type="number" bind:value={symptom.attack.frequency} placeholder="times" />
 
-            {@render radioGroup("attackUnit", ['day', 'week'], (value) => symptom.attack.unit = value, symptom.attack.unit,  "/", "", "space-x-2")}
+            {@render inputGroup("radio", "attackUnit", ["day", "week"], (value, checked) => {symptom.attack.unit = checked;}, symptom.attack.unit, "/", "", "sapce-x-2")}
 
             <label>
                 <select bind:value={symptom.attack.intensity}>
@@ -242,40 +242,40 @@
 
     <fieldset>
         <legend>Suicidal idea</legend>
-            {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {symptom.suicidal.type = updateArray(symptom.suicidal.type, value, checked);}, symptom.suicidal.type)}
+            {@render inputGroup("checkbox", "suicidalType", ["idea", "plan", "attempt"], (value, checked) => {symptom.suicidal.type = updateArray(symptom.suicidal.type, value, checked);}, symptom.suicidal.type)}
 
         <div class="flex items-center gap-4">
-            {@render checkboxGroup(['hanging', 'poisoning', 'knife'], (value, checked) => {symptom.suicidal.method = updateArray(symptom.suicidal.method, value, checked);}, symptom.suicidal.method)}
+            {@render inputGroup("checkbox", "suicidalMethod", ["hanging", "poisoning", "knife"], (value, checked) => {symptom.suicidal.method = updateArray(symptom.suicidal.method, value, checked);}, symptom.suicidal.method)}
             <input type="text" bind:value={symptom.suicidal.otherMethod} placeholder="Other method" />
         </div>
 
         <div class="flex items-center gap-4">
             <input type="number" bind:value={symptom.suicidal.when.amount} placeholder="1 day/month/year ago" />
-            {@render radioGroup("suicidalUnit", ['days', 'months', 'years'], (value) => symptom.suicidal.when.unit = value, symptom.suicidal.when.unit, "", " ago", "space-x-2")}
+            {@render inputGroup("radio", "suicidalUnit", ["days", "months", "years"], (value, checked) => { symptom.suicidal.when.unit = checked;}, symptom.suicidal.when.unit, "", " ago")}
         </div>
     </fieldset>
 
     <fieldset>
         <legend>Homocidal idea</legend>
-            {@render checkboxGroup(['idea', 'plan', 'attempt'], (value, checked) => {symptom.homocidal.type = updateArray(symptom.homocidal.type, value, checked);}, symptom.homocidal.type)}
+            {@render inputGroup("checkbox", "homocidalType", ["idea", "plan", "attempt"], (value, checked) => {symptom.homocidal.type = updateArray(symptom.homocidal.type, value, checked);}, symptom.homocidal.type)}
     </fieldset>
 
     <h3>Interpersonal Relations</h3>
     <fieldset>
         <legend>Relationship with</legend>
         <div class="flex items-center gap-4">
-            {@render checkboxGroup(['social', 'friends', 'family', 'neighbor'], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value, checked);}, interPersonal.relationType, "", "", "space-x-2")}
+            {@render inputGroup("checkbox", "relationType", ["social", "friends", "family", "neighbor"], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value, checked);}, interPersonal.relationType)}
             <input type="text" bind:value={interPersonal.otherRelationType} placeholder="others" />
             <input type="number" bind:value={interPersonal.frequency} placeholder="times" />
-            {@render radioGroup("interPersonalUnit", ['week', 'month'], (value) => interPersonal.unit = value, interPersonal.unit, "/", "", "space-x-2")}
+            {@render inputGroup("radio", "interPersonalUnit", ["week", "month"], (value, checked) => {interPersonal.unit = checked;}, interPersonal.unit, "/", "", "space-x-2")}
         </div>
         <legend>How to play</legend>
         <div class="flex items-center gap-4">
-            {@render checkboxGroup(['talking', 'eating', 'drinking', 'traveling'], (value, checked) => {interPersonal.method = updateArray(interPersonal.method, value, checked);}, interPersonal.method, "", "", "")}
+            {@render inputGroup("checkbox", "interPersonalMethod", ["talking", "eating", "drinking", "traveling"], (value, checked) => {interPersonal.method = updateArray(interPersonal.method, value, checked);}, interPersonal.method)}
             <input type="text" bind:value={interPersonal.otherMethod} placeholder="others" />
         </div>
         <legend>Withdrawal</legend>
-            {@render radioGroup("interPersonalWithdrawal", ['social withdrawal', 'no relationship'], (value) => interPersonal.withdrawal= value, interPersonal.withdrawal, "", "", "space-x-2")}
+            {@render inputGroup("radio", "interPersonalWithdrawal", ["social withdrawal", "no relationship"], (value, checked) => {interPersonal.withdrawal = checked;}, interPersonal.withdrawal, "", "", "space-x-2")}
     </fieldset>
 
     <h3>Leisure & Hobbies</h3>
@@ -298,18 +298,18 @@
     <h3>Alcohol</h3>
     <fieldset>
         <legend>Alcoholic beverage</legend>
-            {@render checkboxGroup(['소주', 'beer', 'wine', '양주', '막걸리', '폭탄주', 'mix'], (value, checked) => {alcohol.alcoholicBeverage = updateArray(alcohol.alcoholicBeverage, value, checked);}, alcohol.alcoholicBeverage, "", "", "", "")}
+            {@render inputGroup("checkbox", "alcoholicBeverage", ["소주", "beer", "wine", "양주", "막걸리", "폭탄주", "mix"], (value, checked) => {alcohol.alcoholicBeverage = updateArray(alcohol.alcoholicBeverage, value, checked);}, alcohol.alcoholicBeverage)}
         <legend>amount & frequency</legend>
-            <input type="text" name="alcoholAmount" bind:value={alcohol.amount} placeholder="amount" /><label for="alcoholAmount">/one time</label><br>
         <div class="flex items-center gap-4">
+            <input type="text" name="alcoholAmount" bind:value={alcohol.amount} placeholder="amount" /><label for="alcoholAmount">/one time</label><br>
             <input type="text" bind:value={alcohol.frequency} placeholder="times" />
-            {@render radioGroup("alcoholUnit", ['day', 'week', 'month'], (value) => alcohol.unit = value, alcohol.unit, "/", "", "space-x-2")}
+            {@render inputGroup("radio", "alcoholUnit", ["day", "week", "month"], (value, checked) => {alcohol.unit = checked;}, alcohol.unit, "/", "", "space-x-2")}
         </div>
         <span>changed over time:</span>
-            {@render radioGroup("alcoholProgress", ['persist', 'increase', 'neutral', 'decrease'], (value) => alcohol.progress = value, alcohol.progress, "", "", "")}
+            {@render inputGroup("radio", "alcoholProgress", ["persist", "increase", "neutral", "decrease"], (value, checked) => {alcohol.progress = checked;}, alcohol.progress)}
 
         <legend>Alcohol snack</legend>
-            {@render checkboxGroup(['안주 없음', 'meat', 'fruits', '반찬', '...'], (value, checked) => {alcohol.alcohokicSnack = updateArray(alcohol.alcohokicSnack, value, checked);}, alcohol.alcohokicSnack, "", "", "")}
+            {@render inputGroup("checkbox", "alcoholSnack", ["안주 없음", "meat", "fruits", "반찬", "..."], (value, checked) => {alcohol.alcoholSnack = updateArray(alcohol.alcoholSnack, value, checked);}, alcohol.alcoholSnack)}
     </fieldset>
 </form>
 

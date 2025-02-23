@@ -22,6 +22,11 @@ export interface SymptomData {
     };
 }
 
+export interface SymptomItemsData {
+    name: string;
+    label: string;
+}
+
 export interface InterPersonalData {
     relationType: string[];
     otherRelationType: string;
@@ -42,7 +47,7 @@ export interface LeisureNhobbiesData {
 }
 
 export interface AlcoholData {
-    alcoholicBeverage: string[];
+    alcoholBeverage: string[];
     progress: string;
     amount: string;
     frequency: string;
@@ -53,15 +58,24 @@ export interface AlcoholData {
 
 export interface DietData {
     interval: string;
-    times: string;
+    frequency: string;
     appetite: string;
     bingeEating: {
-        type: string;
+        type: string[];
+        otherType: string;
         when: string;
     };
 }
 
-export interface SymptomItemsData {
-    name: string;
-    label: string;
+export interface ExerciseData {
+    type: string[];
+    otherType: string;
+    duration: string;
+    under30min: boolean;
+    frequency: string;
+    otherFrequency: string;
+    noExercise: {
+        why: string[];
+        otherWhy: string;
+    }
 }

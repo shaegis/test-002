@@ -2,7 +2,7 @@
     import type { PageServerData } from "./$types";
     import Subjective from "$lib/components/progress/Subjective.svelte";
     import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timePeriods, sxProgress } from "$lib/data/progress/symptoms";
-    import type { SymptomData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData } from "$lib/types/progress/subjective";
+    import type { SymptomData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData } from "$lib/types/progress/subjective";
 
     let { data }: { data: PageServerData } = $props();
 
@@ -19,11 +19,15 @@
     })
 
     let alcohol = $state<AlcoholData>({
-        alcoholicBeverage: [], progress: "", amount: "", frequency: "", unit: "", otherType: [], alcoholSnack: []
+        alcoholBeverage: [], progress: "", amount: "", frequency: "", unit: "", otherType: [], alcoholSnack: []
     })
 
     let diet = $state<DietData>({
-        interval: '', times: '', appetite: '', bingeEating: {type: '', when: ''}
+        interval: '', frequency: '', appetite: '', bingeEating: {type: [], otherType: '', when: ''}
+    })
+
+    let exercise = $state<ExerciseData>({
+        type: [], otherType: '', duration: '', under30min: false, frequency: '', otherFrequency: '', noExercise: { why: [], otherWhy: '' }
     })
 </script>
 
@@ -32,7 +36,7 @@
 <p>Your user ID is {data.user.id}.</p>
 
 <form>
-    <Subjective {data} {symptom} {interPersonal} {leisureNhobbies} {alcohol} {diet} />
+    <Subjective {data} {symptom} {interPersonal} {leisureNhobbies} {alcohol} {diet} {exercise} />
 
     <h2>Objective</h2>
         <h3>MSE</h3>
@@ -47,6 +51,7 @@
 {JSON.stringify(leisureNhobbies, null, 2)}
 {JSON.stringify(alcohol, null, 2)}
 {JSON.stringify(diet, null, 2)}
+{JSON.stringify(exercise, null, 2)}
 </pre>
 
 </article>

@@ -77,5 +77,41 @@ export interface ExerciseData {
     noExercise: {
         why: string[];
         otherWhy: string;
-    }
+    };
+}
+
+export interface SleepData {
+    nightSleep: {
+        sleepDisturbance: boolean;
+        takingMedicine: string;
+        takingMedicineUnit: string;
+        fallAsleep: string;
+        fallAsleepUnit: string;
+        wakeUp: string;
+        wakeUpUnit: string;
+        sleepInductionTime: string;
+        sleepInductionWithin1hr: boolean;
+        brokenSleep: boolean;
+        brokenSleepFrequency: string;
+        brokenSleepDtUrination: boolean;
+        resleep: boolean;
+        resleepInductionTime: string;
+        quality: string;
+        qualityOther: string[];
+        awakenFeeling: string;
+        insomnia: string[];
+        morningSedation: string;
+    };
+    nap: {
+        napDuration: string;
+        napDurationUnit: string;
+        napFeeling: string;
+    };
+    dream: {
+        content: string;
+        remember: string;
+        feeling: string[];
+        resonance: string;
+        nightmare: boolean;
+    };
 }

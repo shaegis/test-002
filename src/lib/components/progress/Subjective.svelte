@@ -1,6 +1,6 @@
 <script lang="ts">
     import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timePeriods, sxProgress } from "$lib/data/progress/symptoms";
-    import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData } from "$lib/types/progress/subjective";
+    import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
     import { updateArray } from "$lib/utils/array";
 
     export let symptom: SymptomData;
@@ -9,6 +9,7 @@
     export let alcohol: AlcoholData;
     export let diet: DietData;
     export let exercise: ExerciseData;
+    export let sleep: SleepData;
 </script>
 
 {#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: "psychological" | "somatic")}
@@ -217,4 +218,20 @@
                 {@render inputGroup("checkbox", "noExerciseWhy", ["허리", "무릎", "다리", "통증", "디스크", "힘듦", "시간 x", "귀찮음"], (value, checked) => {exercise.noExercise.why = updateArray(exercise.noExercise.why, value, checked);}, exercise.noExercise.why)}
                 <input type="text" bind:value={exercise.noExercise.otherWhy} placeholder="기타 이유" />
             </div>
+</section>
+
+<section>
+    <h3>Sleep</h3>
+    <fieldset>
+        <legend>Night sleep</legend>
+            <input type="checkbox" id="sleepSleepDisturbance" bind:checked={sleep.nightSleep.sleepDisturbance} /><label for="sleepSleepDisturbance">sleep disturbance</label>
+            <div class="flex items-center gap-4">
+                <label for="sleepTakingMedicine">복약</label><input type="text" id="sleepTakingMedicine" bind:value={sleep.nightSleep.takingMedicine} />
+                {@render inputGroup("radio", "sleepTakingMedicineUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.takingMedicineUnit = checked}, sleep.nightSleep.takingMedicineUnit)}
+                <label for="sleepFallAsleep">복약</label><input type="text" id="sleepFallAsleep" bind:value={sleep.nightSleep.fallAsleep} />
+                {@render inputGroup("radio", "sleepFallAsleepUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.fallAsleepUnit = checked}, sleep.nightSleep.fallAsleepUnit)}
+                <label for="sleepWakeUp">복약</label><input type="text" id="sleepWakeUp" bind:value={sleep.nightSleep.wakeUp} />
+                {@render inputGroup("radio", "sleepWakeUpUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.wakeUpUnit= checked}, sleep.nightSleep.wakeUpUnit)}
+            </div>
+    </fieldset>
 </section>

@@ -2,7 +2,7 @@
     import type { PageServerData } from "./$types";
     import Subjective from "$lib/components/progress/Subjective.svelte";
     import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timePeriods, sxProgress } from "$lib/data/progress/symptoms";
-    import type { SymptomData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData } from "$lib/types/progress/subjective";
+    import type { SymptomData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
 
     let { data }: { data: PageServerData } = $props();
 
@@ -23,11 +23,16 @@
     })
 
     let diet = $state<DietData>({
-        interval: '', frequency: '', appetite: '', bingeEating: {type: [], otherType: '', when: ''}
+        interval: "", frequency: "", appetite: "", bingeEating: {type: [], otherType: "", when: ""}
     })
 
     let exercise = $state<ExerciseData>({
-        type: [], otherType: '', duration: '', under30min: false, frequency: '', otherFrequency: '', noExercise: { why: [], otherWhy: '' }
+        type: [], otherType: "", duration: "", under30min: false, frequency: "", otherFrequency: "", noExercise: { why: [], otherWhy: "" }
+    })
+    let sleep = $state<SleepData>({
+        nightSleep: { sleepDisturbance: false, takingMedicine: "", takingMedicineUnit: "", fallAsleep: "", fallAsleepUnit: "", wakeUp: "", wakeUpUnit: "", sleepInductionTime: "", sleepInductionWithin1hr: false, brokenSleep: false, brokenSleepFrequency: "", brokenSleepDtUrination: false, resleep: false, resleepInductionTime: "", quality: "", qualityOther: [], awakenFeeling: "", insomnia: [], morningSedation: "", },
+        nap: { napDuration: "", napDurationUnit: "", napFeeling: "", },
+        dream: { content: "", remember: "", feeling: [], resonance: "", nightmare: false, },
     })
 </script>
 
@@ -36,7 +41,7 @@
 <p>Your user ID is {data.user.id}.</p>
 
 <form>
-    <Subjective {data} {symptom} {interPersonal} {leisureNhobbies} {alcohol} {diet} {exercise} />
+    <Subjective {data} {symptom} {interPersonal} {leisureNhobbies} {alcohol} {diet} {exercise} {sleep} />
 
     <h2>Objective</h2>
         <h3>MSE</h3>
@@ -52,6 +57,7 @@
 {JSON.stringify(alcohol, null, 2)}
 {JSON.stringify(diet, null, 2)}
 {JSON.stringify(exercise, null, 2)}
+{JSON.stringify(sleep, null, 2)}
 </pre>
 
 </article>

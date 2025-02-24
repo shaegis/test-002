@@ -209,7 +209,7 @@
     <fieldset>
         <legend>duration & frequency</legend>
             <input type="text" id="exerciseDuration" bind:value={exercise.duration} disabled={exercise.under30min} /><label for="exerciseDuration">hr</label>
-            <input type="checkbox" id="exerciseUnder30min" bind:checked={exercise.under30min} /><label for="exerciseUnder30min">&lt;30min</label>
+            <input type="checkbox" id="exerciseUnder30min" bind:checked={exercise.under30min} /><label for="exerciseUnder30min">&lt; 30min</label>
             {@render inputGroup("radio", "exerciseFrequency", ["매일", "하루걸러", "2~3/wk", "가끔"], (value, checked) => {exercise.frequency = checked;}, exercise.frequency)}
     </fieldset>
     <fieldset>
@@ -222,16 +222,41 @@
 
 <section>
     <h3>Sleep</h3>
-    <fieldset>
         <legend>Night sleep</legend>
+        <fieldset>
             <input type="checkbox" id="sleepSleepDisturbance" bind:checked={sleep.nightSleep.sleepDisturbance} /><label for="sleepSleepDisturbance">sleep disturbance</label>
             <div class="flex items-center gap-4">
                 <label for="sleepTakingMedicine">복약</label><input type="text" id="sleepTakingMedicine" bind:value={sleep.nightSleep.takingMedicine} />
-                {@render inputGroup("radio", "sleepTakingMedicineUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.takingMedicineUnit = checked}, sleep.nightSleep.takingMedicineUnit)}
+                {@render inputGroup("radio", "sleepTakingMedicineUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.takingMedicineUnit = checked;}, sleep.nightSleep.takingMedicineUnit)}
                 <label for="sleepFallAsleep">복약</label><input type="text" id="sleepFallAsleep" bind:value={sleep.nightSleep.fallAsleep} />
-                {@render inputGroup("radio", "sleepFallAsleepUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.fallAsleepUnit = checked}, sleep.nightSleep.fallAsleepUnit)}
+                {@render inputGroup("radio", "sleepFallAsleepUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.fallAsleepUnit = checked;}, sleep.nightSleep.fallAsleepUnit)}
                 <label for="sleepWakeUp">복약</label><input type="text" id="sleepWakeUp" bind:value={sleep.nightSleep.wakeUp} />
-                {@render inputGroup("radio", "sleepWakeUpUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.wakeUpUnit= checked}, sleep.nightSleep.wakeUpUnit)}
+                {@render inputGroup("radio", "sleepWakeUpUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.wakeUpUnit = checked;}, sleep.nightSleep.wakeUpUnit)}
             </div>
-    </fieldset>
+        </fieldset>
+        <fieldset>
+            <div class="flex items-center gap-4">
+                <label for="sleepSleepInductionTime">입면</label><input type="text" id="sleepSleepInductionTime" bind:value={sleep.nightSleep.sleepInductionTime} placeholder="1시간 정도에 잠이 듬" />
+                <input type="checkbox" id="sleepSleepWithin1hr" bind:checked={sleep.nightSleep.sleepInductionWithin1hr} /><label for="sleepSleepWithin1hr">&lt; 1hr</label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>broken sleep</legend>
+                <div class="flex items-center gap-4">
+                    {@render inputGroup("radio", "sleepBrokenSleep", ["+", "-", "+/-", "자주"], (value, checked) => {sleep.nightSleep.brokenSleep = checked;}, sleep.nightSleep.brokenSleep)}
+                    <input type="text" id="sleepBrokenSleepFrequency" bind:value={sleep.nightSleep.brokenSleepFrequency} /><label for="sleepBrokenSleepFrequency">/night</label>
+                    <input type="checkbox" id="sleepBrokenSleepDtUrination" bind:checked={sleep.nightSleep.brokenSleepDtUrination} placeholder="하루밤에 몇번 깨나?" /><label for="sleepBrokenSleepDtUrination">d/t 소변</label>
+                </div>
+            <legend>re-sleep</legend>
+                <div class="flex items-center gap-4">
+                    <input type="checkbox" id="sleepResleep" bind:checked={sleep.nightSleep.resleep} /><label for="sleepResleep">fall in re-sleep</label>
+                    <label for="sleepResleepInductionTime">: within </label><input type="text" id="sleepResleepInductionTime" bind:value={sleep.nightSleep.resleepInductionTime} placeholder="다시 잠들때까지의 시간" /><label for="sleepResleepInductionTime">min</label>
+                </div>
+            <legend>sleep quality</legend>
+                <div class="flex items-center gap-4">
+                    {@render inputGroup("radio", "sleepQuality", ["good", "poor", "+/-"], (value, checked) => {sleep.nightSleep.quality = checked;}, sleep.nightSleep.quality)}
+                    {@render inputGroup("checkbox", "sleepQualityOther", ["깊은 잠x", "설침", "RLS"], (value, checked) => {sleep.nightSleep.qualityOther = updateArray(sleep.nightSleep.qualityOther, value, checked);}, sleep.nightSleep.qualityOther)}
+                </div>
+            <legend>awakening feeling</legend>
+        </fieldset>
 </section>

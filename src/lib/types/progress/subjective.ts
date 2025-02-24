@@ -91,7 +91,7 @@ export interface SleepData {
         wakeUpUnit: string;
         sleepInductionTime: string;
         sleepInductionWithin1hr: boolean;
-        brokenSleep: boolean;
+        brokenSleep: string;
         brokenSleepFrequency: string;
         brokenSleepDtUrination: boolean;
         resleep: boolean;

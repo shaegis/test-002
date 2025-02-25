@@ -18,7 +18,7 @@
         <ul class="menu">
             {#if $page.data.user}
                 <li>
-                    <a href="/dash_board" class:active-btn={$page.url.pathname === "/dash_board"}>Dash-board</a>
+                    <a href="/dashBoard" class:active-btn={$page.url.pathname === "/dashBoard"}>Dash-board</a>
                 </li>
                 <li>
                     <a href="/progress" class:active-btn={$page.url.pathname === "/progress"}>Progress</a>

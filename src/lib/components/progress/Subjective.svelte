@@ -30,28 +30,7 @@
     </fieldset>
 </section>
 {/snippet}
-
-{#snippet inputGroup(type, name, options, bindValue, labelPrefix = "", labelSuffix = "", className = "flex items-center gap-4")}
-    <div class={className}>
-        {#each options as option}
-            <label>
-                <input 
-                    type={type} 
-                    value={option} 
-                    name={name} 
-                    bind:checked={type === "radio" ? bindValue === option : bindValue.includes(option)}
-                    onchange={() => {
-                        if (type === "radio") bindValue = option;
-                        else bindValue = bindValue.includes(option) ? bindValue.filter(v => v !== option) : [...bindValue, option];
-                    }}
-                />
-                {labelPrefix}{option}{labelSuffix}
-            </label>
-        {/each}
-    </div>
-{/snippet}
-
-<!-- previous snippet code. React style.
+<!--
 {#snippet inputGroup(type: "radio" | "checkbox", name: string = "", options: string[], bindFunction: (value: string, checked: type extends "radio" ? string : boolean) => void, currentValues: string[] | string, labelPrefix: string = "", labelSuffix: string = "", className: string = "flex items-center gap-4")}
     <div class={className}>
         {#each options as option}
@@ -69,8 +48,29 @@
     </div>
 {/snippet}
 -->
+{#snippet inputGroup(type: "radio" | "checkbox", name: string = "", options: string[], bindFunction: (value: string, checked: type extends "radio" ? string : boolean) => void, currentValues: string[] | string, labelPrefix: string = "", labelSuffix: string = "", className: string = "flex items-center gap-4")}
+    <div class={className}>
+        {#each options as option}
+            <label>
+                <input 
+                    type={type} 
+                    value={option} 
+                    name={name} 
+                    checked={type === "radio" ? currentValues === option : (currentValues as string[]).includes(option)} 
+                    onchange={(e) => bindFunction(option, e.target.checked)} 
+                />
+                {labelPrefix}{option}{labelSuffix}
+            </label>
+        {/each}
+    </div>
+{/snippet}
 <!--
 {@render inputGroup('checkbox', 'relationType', ['social', 'friends', 'family', 'neighbor'], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value, checked);}, interPersonal.relationType /* prefix, suffix, className omitted intentionally */)}
+
+{@render inputGroup('radio', 'interPersonalWithdrawalType', ['social withdrawal', 'no relationship'], (value, checked) => {
+    if (checked) interPersonal.withdrawalType = value;
+}, interPersonal.withdrawalType, "", "", "space-x-2")}
+OR
 {@render inputGroup('radio', 'interPersonalWithdrawalType', ['social withdrawal', 'no relationship'], (value, checked) => {interPersonal.withdrawalType = checked;}, interPersonal.withdrawalType, "", "", "space-x-2")}
 -->
 
@@ -85,15 +85,15 @@
 
     <fieldset>
         <legend>mainly occures in/at</legend>
-            {@render inputGroup("radio", "occursIn", timePeriods, (value, checked) => {symptom.occursIn = checked;}, symptom.occursIn)}
+            {@render inputGroup("radio", "occursIn", timePeriods, (value, checked) => {if (checked) symptom.occursIn = value;}, symptom.occursIn)}
     </fieldset>
 
         <h4>Attack</h4>
         <fieldset class="flex items-center gap-4">
-            {@render inputGroup("radio", "attackType", sxProgress, (value, checked) => {symptom.attack.type = checked;}, symptom.attack.type)}
+            {@render inputGroup("radio", "attackType", sxProgress, (value, checked) => {if (checked) symptom.attack.type = value;}, symptom.attack.type)}
             <input type="number" bind:value={symptom.attack.frequency} placeholder="times" />
 
-            {@render inputGroup("radio", "attackUnit", ["day", "week"], (value, checked) => {symptom.attack.unit = checked;}, symptom.attack.unit, "/", "", "space-x-2")}
+            {@render inputGroup("radio", "attackUnit", ["day", "week"], (value, checked) => {if (checked) symptom.attack.unit = value;}, symptom.attack.unit, "/", "", "space-x-2")}
 
             <label>
                 <select bind:value={symptom.attack.intensity}>
@@ -116,7 +116,7 @@
 
             <div class="flex items-center gap-4">
                 <input type="number" bind:value={symptom.suicidal.when.amount} placeholder="1 day/month/year ago" />
-                {@render inputGroup("radio", "suicidalUnit", ["days", "months", "years"], (value, checked) => { symptom.suicidal.when.unit = checked;}, symptom.suicidal.when.unit, "", " ago")}
+                {@render inputGroup("radio", "suicidalUnit", ["days", "months", "years"], (value, checked) => {if (checked) symptom.suicidal.when.unit = value;}, symptom.suicidal.when.unit, "", " ago")}
             </div>
         </fieldset>
 
@@ -133,7 +133,7 @@
             {@render inputGroup("checkbox", "relationType", ["social", "friends", "family", "neighbor"], (value, checked) => {interPersonal.relationType = updateArray(interPersonal.relationType, value, checked);}, interPersonal.relationType)}
             <input type="text" bind:value={interPersonal.otherRelationType} placeholder="others" />
             <input type="number" bind:value={interPersonal.frequency} placeholder="times" />
-            {@render inputGroup("radio", "interPersonalUnit", ["week", "month"], (value, checked) => {interPersonal.unit = checked;}, interPersonal.unit, "/", "", "space-x-2")}
+            {@render inputGroup("radio", "interPersonalUnit", ["week", "month"], (value, checked) => {if (checked) interPersonal.unit = value;}, interPersonal.unit, "/", "", "space-x-2")}
         </fieldset>
         <h4>How to play</h4>
         <fieldset class="flex items-center gap-4">
@@ -142,7 +142,7 @@
         </fieldset>
         <h4>Withdrawal</h4>
         <fieldset>
-            {@render inputGroup("radio", "interPersonalWithdrawal", ["social withdrawal", "no relationship"], (value, checked) => {interPersonal.withdrawal = checked;}, interPersonal.withdrawal, "", "", "space-x-2")}
+            {@render inputGroup("radio", "interPersonalWithdrawal", ["social withdrawal", "no relationship"], (value, checked) => {if (checked) interPersonal.withdrawal = value;}, interPersonal.withdrawal, "", "", "space-x-2")}
     </fieldset>
 </section>
 
@@ -179,10 +179,10 @@
             <input type="text" id="alcoholAmount" bind:value={alcohol.amount} placeholder="amount" />
             <label for="alcoholAmount">/one time</label><br>
             <input type="text" bind:value={alcohol.frequency} placeholder="times" />
-            {@render inputGroup("radio", "alcoholUnit", ["day", "week", "month"], (value, checked) => {alcohol.unit = checked;}, alcohol.unit, "/", "", "space-x-2")}
+            {@render inputGroup("radio", "alcoholUnit", ["day", "week", "month"], (value, checked) => {if (checked) alcohol.unit = value;}, alcohol.unit, "/", "", "space-x-2")}
         </div>
         <span>changed over time:</span>
-            {@render inputGroup("radio", "alcoholProgress", ["persist", "increase", "neutral", "decrease"], (value, checked) => {alcohol.progress = checked;}, alcohol.progress)}
+            {@render inputGroup("radio", "alcoholProgress", ["persist", "increase", "neutral", "decrease"], (value, checked) => {if (checked) alcohol.progress = value;}, alcohol.progress)}
         </fieldset>
         <h4>Alcohol snack</h4>
         <fieldset>
@@ -195,13 +195,13 @@
         <h4>Intake interval</h4>
         <fieldset>
             <div class="flex items-center gap-4">
-                {@render inputGroup("radio", "intakeInterval", ["regular", "irregular"], (value, checked) => {diet.interval = checked;}, diet.interval)}
+                {@render inputGroup("radio", "intakeInterval", ["regular", "irregular"], (value, checked) => {if (checked) diet.interval = value;}, diet.interval)}
                 <input type="text" id="intakeTimes" bind:value={diet.frequency} placeholder="times" />
                 <label for="intakeTimes">times/day</label>
             </div>
             <div class="flex items-center gap-4">
                 <label for="intakeAppetite">appetite</label>
-                {@render inputGroup("radio", "intakeAppetite", ["+", "-", "+/-"], (value, checked) => {diet.appetite = checked;}, diet.appetite)}
+                {@render inputGroup("radio", "intakeAppetite", ["+", "-", "+/-"], (value, checked) => {if (checked) diet.appetite = value;}, diet.appetite)}
             </div>
         </fieldset>
         <h4>Binge eating</h4>
@@ -229,7 +229,7 @@
             <label for="exerciseDuration">hr</label>
             <input type="checkbox" id="exerciseUnder30min" bind:checked={exercise.under30min} />
             <label for="exerciseUnder30min">&lt; 30min</label>
-            {@render inputGroup("radio", "exerciseFrequency", ["매일", "하루걸러", "2~3/wk", "가끔"], (value, checked) => {exercise.frequency = checked;}, exercise.frequency)}
+            {@render inputGroup("radio", "exerciseFrequency", ["매일", "하루걸러", "2~3/wk", "가끔"], (value, checked) => {if (checked) exercise.frequency = value;}, exercise.frequency)}
     </fieldset>
     <fieldset class="flex items-center gap-4">
         <legend>do not exercise d/t</legend>
@@ -246,11 +246,11 @@
             <label for="sleepSleepDisturbance">sleep disturbance</label>
             <div class="flex items-center gap-4">
                 <label for="sleepTakingMedicine">복약</label><input type="text" id="sleepTakingMedicine" bind:value={sleep.nightSleep.takingMedicine} />
-                {@render inputGroup("radio", "sleepTakingMedicineUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.takingMedicineUnit = checked;}, sleep.nightSleep.takingMedicineUnit)}
+                {@render inputGroup("radio", "sleepTakingMedicineUnit", ["AM", "PM", "irregular"], (value, checked) => {if (checked) sleep.nightSleep.takingMedicineUnit = value;}, sleep.nightSleep.takingMedicineUnit)}
                 <label for="sleepFallAsleep">복약</label><input type="text" id="sleepFallAsleep" bind:value={sleep.nightSleep.fallAsleep} />
-                {@render inputGroup("radio", "sleepFallAsleepUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.fallAsleepUnit = checked;}, sleep.nightSleep.fallAsleepUnit)}
+                {@render inputGroup("radio", "sleepFallAsleepUnit", ["AM", "PM", "irregular"], (value, checked) => {if (checked) sleep.nightSleep.fallAsleepUnit = value;}, sleep.nightSleep.fallAsleepUnit)}
                 <label for="sleepWakeUp">복약</label><input type="text" id="sleepWakeUp" bind:value={sleep.nightSleep.wakeUp} />
-                {@render inputGroup("radio", "sleepWakeUpUnit", ["AM", "PM", "irregular"], (value, checked) => {sleep.nightSleep.wakeUpUnit = checked;}, sleep.nightSleep.wakeUpUnit)}
+                {@render inputGroup("radio", "sleepWakeUpUnit", ["AM", "PM", "irregular"], (value, checked) => {if (checked) sleep.nightSleep.wakeUpUnit = value;}, sleep.nightSleep.wakeUpUnit)}
             </div>
         </fieldset>
         <fieldset class="flex items-center gap-4">
@@ -262,7 +262,7 @@
         <fieldset>
             <legend>broken sleep</legend>
                 <div class="flex items-center gap-4">
-                    {@render inputGroup("radio", "sleepBrokenSleep", ["+", "-", "+/-", "자주"], (value, checked) => {sleep.nightSleep.brokenSleep = checked;}, sleep.nightSleep.brokenSleep)}
+                    {@render inputGroup("radio", "sleepBrokenSleep", ["+", "-", "+/-", "자주"], (value, checked) => {if (checked) sleep.nightSleep.brokenSleep = value;}, sleep.nightSleep.brokenSleep)}
                     <input type="text" id="sleepBrokenSleepFrequency" bind:value={sleep.nightSleep.brokenSleepFrequency} />
                     <label for="sleepBrokenSleepFrequency">/night</label>
                     <input type="checkbox" id="sleepBrokenSleepDtUrination" bind:checked={sleep.nightSleep.brokenSleepDtUrination} placeholder="하루밤에 몇번 깨나?" /><label for="sleepBrokenSleepDtUrination">d/t 소변</label>
@@ -277,23 +277,23 @@
                 </div>
             <legend>sleep quality</legend>
                 <div class="flex items-center gap-4">
-                    {@render inputGroup("radio", "sleepQuality", ["good", "poor", "+/-"], (value, checked) => {sleep.nightSleep.quality = checked;}, sleep.nightSleep.quality)}
+                    {@render inputGroup("radio", "sleepQuality", ["good", "poor", "+/-"], (value, checked) => {if (checked) sleep.nightSleep.quality = value;}, sleep.nightSleep.quality)}
                     {@render inputGroup("checkbox", "sleepQualityOther", ["깊은 잠x", "설침", "RLS"], (value, checked) => {sleep.nightSleep.qualityOther = updateArray(sleep.nightSleep.qualityOther, value, checked);}, sleep.nightSleep.qualityOther)}
                 </div>
             <legend>awakening feeling</legend>
-                {@render inputGroup("radio", "sleepAwakenFeeling", ["good", "bad", "not bad", "so so", "+/-"], (value, checked) => {sleep.nightSleep.awakenFeeling = checked;}, sleep.nightSleep.awakening)}
+                {@render inputGroup("radio", "sleepAwakenFeeling", ["good", "bad", "not bad", "so so", "+/-"], (value, checked) => {if (checked) sleep.nightSleep.awakenFeeling = value;}, sleep.nightSleep.awakening)}
             <legend>insomnia</legend>
                 {@render inputGroup("checkbox", "sleepInsomnia", ["initial", "middle", "terminal"], (value, checked) => {sleep.nightSleep.insomnia = updateArray(sleep.nightSleep.insomnia, value, checked);}, sleep.nightSleep.insomnia)}
             <legend>sedation</legend>
                 <label for="sleepMorningSedation">morning sedation</label>
-                {@render inputGroup("radio", "sleepMorningSedation", ["+", "-", "+/-", "under 1hr", "AM", "PM", "all day"], (value, checked) => {sleep.nightSleep.morningSedation = checked;}, sleep.nightSleep.morningSedation)}
+                {@render inputGroup("radio", "sleepMorningSedation", ["+", "-", "+/-", "under 1hr", "AM", "PM", "all day"], (value, checked) => {if (checked) sleep.nightSleep.morningSedation = value;}, sleep.nightSleep.morningSedation)}
         </fieldset>
         <h4>Nap</h4>
         <fieldset class="flex items-center gap-4">
             <input type="text" id="sleepNapDuration" bind:value={sleep.nap.napDuration} placeholder="낮잠 시간" />
-            {@render inputGroup("radio", "sleepNapDuration", ["min", "hr"], (value, checked) => {sleep.nap.napDurationUnit = checked;}, sleep.nap.napDurationUnit)}
+            {@render inputGroup("radio", "sleepNapDuration", ["min", "hr"], (value, checked) => {if (checked) sleep.nap.napDurationUnit = value;}, sleep.nap.napDurationUnit)}
             <label for="sleepNapFeeling">nap feeling:</label>
-            {@render inputGroup("radio", "sleepNapFeeling", ["개운", "늘어짐"], (value, checked) => {sleep.nap. napFeeling = checked;}, sleep.nap.napFeeling)}
+            {@render inputGroup("radio", "sleepNapFeeling", ["개운", "늘어짐"], (value, checked) => {if (checked) sleep.nap. napFeeling = value;}, sleep.nap.napFeeling)}
         </fieldset>
         <h4>Dream</h4>
         <fieldset>
@@ -311,7 +311,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <label for="dreamResonance">여운</label>
-                {@render inputGroup("radio", "dreamResonance", ["+", "-"], (value, checked) => {sleep.dream.resonance = checked;}, sleep.dream.resonance)}
+                {@render inputGroup("radio", "dreamResonance", ["+", "-"], (value, checked) => {if (checked) sleep.dream.resonance = value;}, sleep.dream.resonance)}
             </div>
             <div class="flex items-center gap-4">
                 <input type="checkbox" id="dreamNightmare" bind:checked={sleep.dream.nightmare} />

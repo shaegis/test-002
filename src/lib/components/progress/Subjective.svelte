@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { drNoteState } from "$lib/stores/drNoteState";
     import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timeDivision, timeUnit, timeUnits, sxProgress, actionType, actionProgress, amPm, pattern, posiNnega, frequency, quality, feeling, suicidalMethod, relationType, interPersonalMethod, alcoholBeverage, bingeEatingType, bingeEatingWhen, exerciseType, exerciseFrequency, noExerciseWhy, sleepQuality } from "$lib/data/progress/subjective";
     import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
     import { updateArray } from "$lib/utils/array";
@@ -35,13 +36,17 @@
         dream: { content: "", remember: "", feeling: [], resonance: "", nightmare: false, },
     })
 
-//      export let symptom: SymptomData;
-//      export let interPersonal: InterPersonalData;
-//      export let leisureNhobbies: LeisureNhobbiesData;
-//      export let alcohol: AlcoholData;
-//      export let diet: DietData;
-//      export let exercise: ExerciseData;
-//      export let sleep: SleepData;
+    $effect(() => {
+        $drNoteState.progress.subjective = {
+            symptom,
+            interPersonal,
+            leisureNhobbies,
+            alcohol,
+            diet,
+            exercise,
+            sleep
+        };
+    });
 </script>
 
 {#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: "psychological" | "somatic")}

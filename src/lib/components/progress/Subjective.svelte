@@ -1,6 +1,6 @@
 <script lang="ts">
     import { drNoteState } from "$lib/stores/drNoteState";
-//    import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timeDivision, timeUnit, timeUnits, sxProgress, actionType, actionProgress, amPm, pattern, posiNnega, frequency, quality, feeling, suicidalMethod, relationType, interPersonalMethod, alcoholBeverage, bingeEatingType, bingeEatingWhen, exerciseType, exerciseFrequency, noExerciseWhy, sleepQuality } from "$lib/data/progress/subjective";
+    import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timeDivision, timeUnit, timeUnits, sxProgress, actionType, actionProgress, amPm, pattern, posiNnega, frequency, quality, feeling, suicidalMethod, relationType, interPersonalMethod, alcoholBeverage, bingeEatingType, bingeEatingWhen, exerciseType, exerciseFrequency, noExerciseWhy, sleepQuality } from "$lib/data/progress/subjective";
     import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
     import { updateArray } from "$lib/utils/array";
 
@@ -132,12 +132,12 @@ OR
 
             <div class="flex items-center gap-4">
                 {@render inputGroup("checkbox", "suicidalMethod", suicidalMethod, (value, checked) => {subjectiveStore.symptom.suicidal.method = updateArray(subjectiveStore.symptom.suicidal.method, value, checked);}, subjectiveStore.symptom.suicidal.method)}
-                <input type="text" bind:value={symptom.suicidal.otherMethod} placeholder="Other method" />
+                <input type="text" bind:value={subjectiveStore.symptom.suicidal.otherMethod} placeholder="Other method" />
             </div>
 
             <div class="flex items-center gap-4">
-                <input type="number" bind:value={symptom.suicidal.when.amount} placeholder="1 day/month/year ago" />
-                {@render inputGroup("radio", "suicidalUnit", timeUnits, (value, checked) => {if (checked) symptom.suicidal.when.unit = value;}, symptom.suicidal.when.unit, "", " ago")}
+                <input type="number" bind:value={subjectiveStore.symptom.suicidal.when.amount} placeholder="1 day/month/year ago" />
+                {@render inputGroup("radio", "suicidalUnit", timeUnits, (value, checked) => {if (checked) subjectiveStore.symptom.suicidal.when.unit = value;}, subjectiveStore.symptom.suicidal.when.unit, "", " ago")}
             </div>
         </fieldset>
 
@@ -203,7 +203,7 @@ OR
             {@render inputGroup("radio", "alcoholUnit", ["day", "week", "month"], (value, checked) => {if (checked) subjectiveStore.alcohol.unit = value;}, subjectiveStore.alcohol.unit, "/", "", "space-x-2")}
         </div>
         <span>changed over time:</span>
-            {@render inputGroup("radio", "alcoholProgress", actionProgress, (value, checked) => {subjectiveStore.alcohol.alcoholSnack = updateArray(subjectiveStore.alcoholalcoholSnack, value, checked);}, subjectiveStore.alcohol.alcoholSnack)}
+            {@render inputGroup("radio", "alcoholProgress", actionProgress, (value, checked) => {subjectiveStore.alcohol.alcoholSnack = updateArray(subjectiveStore.alcoholSnack, value, checked);}, subjectiveStore.alcohol.alcoholSnack)}
         </fieldset>
 </section>
 
@@ -242,7 +242,7 @@ OR
     </fieldset>
     <fieldset>
         <legend>duration & frequency</legend>
-            <input type="text" id="exerciseDuration" bind:value={subjectiveStore.exercise.duration} disabled={exercise.under30min} />
+            <input type="text" id="exerciseDuration" bind:value={subjectiveStore.exercise.duration} disabled={subjectiveStore.exercise.under30min} />
             <label for="exerciseDuration">hr</label>
             <input type="checkbox" id="exerciseUnder30min" bind:checked={subjectiveStore.exercise.under30min} />
             <label for="exerciseUnder30min">&lt; 30min</label>
@@ -307,7 +307,7 @@ OR
         </fieldset>
         <h4>Nap</h4>
         <fieldset class="flex items-center gap-4">
-            <input type="text" id="sleepNapDuration" bind:value={sleep.nap.napDuration} placeholder="낮잠 시간" />
+            <input type="text" id="sleepNapDuration" bind:value={subjectiveStore.sleep.nap.napDuration} placeholder="낮잠 시간" />
             {@render inputGroup("radio", "sleepNapDuration", ["min", "hr"], (value, checked) => {if (checked) subjectiveStore.sleep.nap.napDurationUnit = value;}, subjectiveStore.sleep.nap.napDurationUnit)}
             <label for="sleepNapFeeling">nap feeling:</label>
             {@render inputGroup("radio", "sleepNapFeeling", ["개운", "늘어짐"], (value, checked) => {if (checked) subjectiveStore.sleep.nap. napFeeling = value;}, subjectiveStore.sleep.nap.napFeeling)}
@@ -340,12 +340,12 @@ OR
 </section>
 
 <pre class="p-4 bg-gray-100 text-gray-900 rounded">
-{JSON.stringify(symptom, null, 2)}
-{JSON.stringify(interPersonal, null, 2)}
-{JSON.stringify(leisureNhobbies, null, 2)}
-{JSON.stringify(alcohol, null, 2)}
-{JSON.stringify(diet, null, 2)}
-{JSON.stringify(exercise, null, 2)}
-{JSON.stringify(sleep, null, 2)}
+{JSON.stringify(subjectiveStore.symptom, null, 2)}
+{JSON.stringify(subjectiveStore.interPersonal, null, 2)}
+{JSON.stringify(subjectiveStore.leisureNhobbies, null, 2)}
+{JSON.stringify(subjectiveStore.alcohol, null, 2)}
+{JSON.stringify(subjectiveStore.diet, null, 2)}
+{JSON.stringify(subjectiveStore.exercise, null, 2)}
+{JSON.stringify(subjectiveStore.sleep, null, 2)}
 </pre>
 

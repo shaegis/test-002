@@ -55,10 +55,7 @@ export const drNoteState = writable<DrNoteState>(lodash.cloneDeep(initialState))
 
 export function resetSubjective() {
     drNoteState.update((state) => {
-//        console.log("drNoteState.ts store file: resetSubjective fn is excuted. Before reset: ", state);
-//        console.log("drNoteState.ts store file: initialState.progress.subjective:", initialState.progress.subjective);
-        state.progress.subjective = initialState.progress.subjective;
-//        console.log("drNoteState.ts store file: resetSubjective fn is excuted. After reset: ", state);
+        state.progress.subjective = lodash.cloneDeep(initialState.progress.subjective); // deepCopy를 통해 state.progress.subjective가 initialState와 pointing하지 않도록 함. (보호 효과)
         return state;
     });
 }

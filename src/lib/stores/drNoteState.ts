@@ -1,31 +1,8 @@
 import { writable } from "svelte/store";
+import lodash from "lodash";
 import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
 
-export const drNoteState = writable<{
-    progress: {
-        subjective: {
-            symptom: SymptomData;
-            interPersonal: InterPersonalData;
-            leisureNhobbies: LeisureNhobbiesData;
-            alcohol: AlcoholData;
-            diet: DietData;
-            exercise: ExerciseData;
-            sleep: SleepData;
-        };
-//        objective: {},
-//        assessment: {},
-//        plan: ''
-    },
-//    protections: {
-//        hira: {},
-//        waiver: {}
-//    },
-//    scale: {
-//        hamA: {},
-//        hamD: {},
-//        bprs: {}
-//    }
-}>({
+const initialState: DrNoteState = {
     progress: {
         subjective: {
             symptom: {
@@ -53,4 +30,20 @@ export const drNoteState = writable<{
             },
         },
     },
-});
+};
+
+export const drNoteState = writable<DrNoteState>(lodash.cloneDeep(initialState)); // deepCopy를 통해 initialState가 변경되지 않도록 함(보호 효과). shallowCopy는 최상위 속성만 복사, 하위 속성은 참조(pointer).
+
+export function resetSubjective() {
+    drNoteState.update((state) => {
+//        console.log("drNoteState.ts store file: resetSubjective fn is excuted. Before reset: ", state);
+//        console.log("drNoteState.ts store file: initialState.progress.subjective:", initialState.progress.subjective);
+        state.progress.subjective = initialState.progress.subjective;
+//        console.log("drNoteState.ts store file: resetSubjective fn is excuted. After reset: ", state);
+        return state;
+    });
+}
+
+export function resetAll() {
+    drNoteState.set(initialState);
+}

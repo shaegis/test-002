@@ -1,10 +1,14 @@
 <script lang="ts">
-    import { drNoteState } from "$lib/stores/drNoteState";
+    import { drNoteState, resetSubjective } from "$lib/stores/drNoteState";
     import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timeDivision, timeUnit, timeUnits, sxProgress, actionType, actionProgress, amPm, pattern, posiNnega, frequency, quality, feeling, suicidalMethod, relationType, interPersonalMethod, alcoholBeverage, bingeEatingType, bingeEatingWhen, exerciseType, exerciseFrequency, noExerciseWhy, sleepQuality } from "$lib/data/progress/subjective";
     import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
     import { updateArray } from "$lib/utils/array";
 
     let subjectiveStore = $drNoteState.progress.subjective;
+
+//    $effect(() => {
+//            console.log("Call $effect(). $drNoteState.progress.subjective changed:", $drNoteState.progress.subjective);
+//    });
 </script>
 
 {#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: "psychological" | "somatic")}
@@ -16,7 +20,7 @@
                 <span>{symptomItem.label}</span>
                 {#each options as option}
                     <label>
-                        <input type="radio" value={option.value} bind:group={subjectiveStore.symptom[symptomGroup][symptomItem.name]} />
+                        <input type="radio" value={option.value} bind:group={$drNoteState.progress.subjective.symptom[symptomGroup][symptomItem.name]} />
                         {option.label}
                     </label>
                 {/each}
@@ -54,6 +58,17 @@ OR
 <section>
 <h2>Subjective</h2>
 
+    <button onclick={() => {
+        if (confirm("Subjective 데이터를 초기화하시겠습니까?")) {
+            /*
+            console.log("Pre-reset state:", $drNoteState.progress.subjective);
+            console.log("Resetting subjective...");
+            */
+            resetSubjective($drNoteState);
+            //console.log("Subjective reset:", $drNoteState.progress.subjective);
+        }
+    }}>Clear Subjective</button>
+
 <section>
     <h3>Symptoms</h3>
         {@render symptomList(psychologicalSymptoms, "psychological")}
@@ -61,7 +76,7 @@ OR
 
     <fieldset>
         <legend>mainly occures in/at</legend>
-            {@render inputGroup("radio", "occursIn", timeDivision, (value, checked) => {if (checked) subjectiveStore.symptom.occursIn = value;}, subjectiveStore.symptom.occursIn)}
+            {@render inputGroup("radio", "occursIn", timeDivision, (value, checked) => {if (checked) $drNoteState.progress.subjective.symptom.occursIn = value;}, $drNoteState.progress.subjective.symptom.occursIn)}
     </fieldset>
 
         <h4>Attack</h4>
@@ -293,15 +308,3 @@ OR
 </section>
 
 </section>
-
-<!--
-<pre class="p-4 bg-gray-100 text-gray-900 rounded">
-{JSON.stringify(subjectiveStore.symptom, null, 2)}
-{JSON.stringify(subjectiveStore.interPersonal, null, 2)}
-{JSON.stringify(subjectiveStore.leisureNhobbies, null, 2)}
-{JSON.stringify(subjectiveStore.alcohol, null, 2)}
-{JSON.stringify(subjectiveStore.diet, null, 2)}
-{JSON.stringify(subjectiveStore.exercise, null, 2)}
-{JSON.stringify(subjectiveStore.sleep, null, 2)}
-</pre>
--->

@@ -1,5 +1,4 @@
 # Bug
-* clear button 두번 시행부터는 clear되지 않는 문제.
 
 # 기능개선
 * localStorage 저장시 암호화.

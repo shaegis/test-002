@@ -3,12 +3,62 @@
     import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timeDivision, timeUnit, timeUnits, sxProgress, actionType, actionProgress, amPm, pattern, posiNnega, frequency, quality, feeling, suicidalMethod, relationType, interPersonalMethod, alcoholBeverage, bingeEatingType, bingeEatingWhen, exerciseType, exerciseFrequency, noExerciseWhy, sleepQuality } from "$lib/data/progress/subjective";
     import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
     import { updateArray } from "$lib/utils/array";
+    import SaveToLocalStorageDialog from "$lib/components/dialog/SaveToLocalStorageDialog.svelte";
+    import OpenFromLocalStorageDialog from "$lib/components/dialog/OpenFromLocalStorageDialog.svelte";
 
-    let subjectiveStore = $drNoteState.progress.subjective;
+    let showSaveToLocalStorageDialog = false;
+    let showOpenFromLocalStorageDialog = false;
+    let nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
+    let existingKeys: string[] = [];
+    let keys: string[] = [];
+    let selectedKey = "";
 
-//    $effect(() => {
-//            console.log("Call $effect(). $drNoteState.progress.subjective changed:", $drNoteState.progress.subjective);
-//    });
+    function loadExistingKeys() {
+        existingKeys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key?.startsWith("copyContent-")) {
+                existingKeys.push(key.replace("copyContent-", ""));
+            }
+        }
+    }
+
+    function loadKeys() {
+        keys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key?.startsWith('copyContent-')) {
+                keys.push(key);
+            }
+        }
+        selectedKey = keys[0] || "";
+    }
+
+    function saveToLocalStorage(name: string) {
+        const key = `copyContent-${name}`;
+        const data = {
+            store: "drNoteState",
+            state: $drNoteState
+        };
+        localStorage.setItem(key, JSON.stringify(data));
+        showSaveToLocalStorageDialog = false;
+        loadExistingKeys();
+    }
+
+    function openFromLocalStorage(key: string) {
+        if (!key) return;
+        const data = localStorage.getItem(key);
+        if (data) {
+            const parsedData = JSON.parse(data);
+            if (parsedData.store === "drNoteState") {
+                drNoteState.set(parsedData.state);
+            }
+        }
+        showOpenFromLocalStorageDialog = false;
+    }
+
+    // 초기 키 로드
+    loadExistingKeys();
 </script>
 
 {#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: "psychological" | "somatic")}
@@ -68,6 +118,35 @@ OR
             //console.log("Subjective reset:", $drNoteState.progress.subjective);
         }
     }}>Clear Subjective</button>
+
+    <button onclick={() => {
+        nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
+        loadExistingKeys(); // Ensure existingKeys are up-to-date
+        showSaveToLocalStorageDialog = true;
+    }}>Save to Browser</button>
+    
+    <button onclick={() => {
+        loadKeys();
+        showOpenFromLocalStorageDialog = true;
+    }}>Open from Browser</button>
+    
+    {#if showSaveToLocalStorageDialog}
+        <SaveToLocalStorageDialog
+            name={nameToSave}
+            existingKeys={existingKeys}
+            onSave={(name) => saveToLocalStorage(name)}
+            onClose={() => showSaveToLocalStorageDialog = false}
+        />
+    {/if}
+    
+    {#if showOpenFromLocalStorageDialog}
+        <OpenFromLocalStorageDialog
+            keys={keys}
+            selectedKey={selectedKey}
+            onOpen={(key) => openFromLocalStorage(key)}
+            onClose={() => showOpenFromLocalStorageDialog = false}
+        />
+    {/if}
 
 <section>
     <h3>Symptoms</h3>

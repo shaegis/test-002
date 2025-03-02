@@ -2,6 +2,25 @@ import { writable } from "svelte/store";
 import lodash from "lodash";
 import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
 
+type DrNoteState = {
+    progress: {
+        subjective: {
+            symptom: SymptomData;
+            interPersonal: InterPersonalData;
+            leisureNhobbies: LeisureNhobbiesData;
+            alcohol: AlcoholData;
+            diet: DietData;
+            exercise: ExerciseData;
+            sleep: SleepData;
+        };
+        // objective: {},
+        // assessment: {},
+        // plan: ''
+    },
+    // protections: { hira: {}, waiver: {} },
+    // scale: { hamA: {}, hamD: {}, bprs: {} }
+};
+
 const initialState: DrNoteState = {
     progress: {
         subjective: {

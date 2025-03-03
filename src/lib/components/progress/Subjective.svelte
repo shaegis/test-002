@@ -4,38 +4,46 @@
     import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
     import { updateArray } from "$lib/utils/array";
     import { saveToLocalStorage, openFromLocalStorage, loadExistingKeys, loadKeys, deleteSelectedFromLocalStorage, deleteAllFromLocalStorage } from "$lib/utils/localStorage";
-    import SaveToLocalStorageDialog from "$lib/components/dialog/SaveToLocalStorageDialog.svelte";
-    import OpenFromLocalStorageDialog from "$lib/components/dialog/OpenFromLocalStorageDialog.svelte";
-    import DeleteFromLocalStorageDialog from "$lib/components/dialog/DeleteFromLocalStorageDialog.svelte";
+//    import SaveToLocalStorageDialog from "$lib/components/dialog/SaveToLocalStorageDialog.svelte";
+//    import OpenFromLocalStorageDialog from "$lib/components/dialog/OpenFromLocalStorageDialog.svelte";
+//    import DeleteFromLocalStorageDialog from "$lib/components/dialog/DeleteFromLocalStorageDialog.svelte";
+    import ManageLocalStorageDialog from "$lib/components/dialog/ManageLocalStorageDialog.svelte";
 
     // localStorage initialization
-    let showSaveToLocalStorageDialog = false;
-    let showOpenFromLocalStorageDialog = false;
-    let showDeleteFromLocalStorageDialog = false;
-    let nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
+    let showManageLocalStorageDialog = false;
+//    let showSaveToLocalStorageDialog = false;
+//    let showOpenFromLocalStorageDialog = false;
+//    let showDeleteFromLocalStorageDialog = false;
+//    let nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
     let existingKeys: string[] = loadExistingKeys();
     let keys: string[] = [];
-    let selectedKey = "";
+//    let selectedKey = "";
 
-    // localStorage Open 버튼 클릭 시 keys 로드
-    function handleOpenClick() {
-        keys = loadKeys();
-        selectedKey = keys[0] || "";
-        showOpenFromLocalStorageDialog = true;
-    }
-
-    // localStorage Save 버튼 클릭 시 existingKeys 갱신
-    function handleSaveClick() {
-        nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
+    // Manage 버튼 클릭 시
+    function handleManageClick() {
         existingKeys = loadExistingKeys();
-        showSaveToLocalStorageDialog = true;
+        keys = loadKeys();
+        showManageLocalStorageDialog = true;
     }
-
-    // Delete 버튼 클릭 시 다이얼로그 열기
-    function handleDeleteClick() {
-        existingKeys = loadExistingKeys(); // 최신 키 목록 갱신
-        showDeleteFromLocalStorageDialog = true;
-    }
+//    // localStorage Open 버튼 클릭 시 keys 로드
+//    function handleOpenClick() {
+//        keys = loadKeys();
+//        selectedKey = keys[0] || "";
+//        showOpenFromLocalStorageDialog = true;
+//    }
+//
+//    // localStorage Save 버튼 클릭 시 existingKeys 갱신
+//    function handleSaveClick() {
+//        nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
+//        existingKeys = loadExistingKeys();
+//        showSaveToLocalStorageDialog = true;
+//    }
+//
+//    // Delete 버튼 클릭 시 다이얼로그 열기
+//    function handleDeleteClick() {
+//        existingKeys = loadExistingKeys(); // 최신 키 목록 갱신
+//        showDeleteFromLocalStorageDialog = true;
+//    }
 </script>
 
 {#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: "psychological" | "somatic")}
@@ -96,10 +104,43 @@ OR
         }
     }}>Clear Subjective Contents</button>
 
+<!--
     <button onclick={handleSaveClick}>Save to Browser</button>
     <button onclick={handleOpenClick}>Open to Browser</button>
     <button onclick={handleDeleteClick}>Delete from Browser</button>
+-->
+    <button onclick={handleManageClick}>Manage Browser Storage</button>
     
+    {#if showManageLocalStorageDialog}
+        <ManageLocalStorageDialog
+            existingKeys={existingKeys}
+            onSave={(name) => {
+                saveToLocalStorage(name, $drNoteState);
+                existingKeys = loadExistingKeys();
+                keys = loadKeys();
+                showManageLocalStorageDialog = false;
+            }}
+            onOpen={(key) => {
+                openFromLocalStorage(key);
+                showManageLocalStorageDialog = false;
+            }}
+            onDeleteSelected={(names) => {
+                deleteSelectedFromLocalStorage(names);
+                existingKeys = loadExistingKeys();
+                keys = loadKeys();
+                showManageLocalStorageDialog = false;
+            }}
+            onDeleteAll={() => {
+                deleteAllFromLocalStorage();
+                existingKeys = loadExistingKeys();
+                keys = loadKeys();
+                showManageLocalStorageDialog = false;
+            }}
+            onClose={() => showManageLocalStorageDialog = false}
+        />
+    {/if}
+
+<!--
     {#if showSaveToLocalStorageDialog}
         <SaveToLocalStorageDialog
             name={nameToSave}
@@ -143,6 +184,7 @@ OR
             onClose={() => showDeleteFromLocalStorageDialog = false}
         />
     {/if}
+-->
 
 <section>
     <h3>Symptoms</h3>

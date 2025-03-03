@@ -3,9 +3,11 @@
     import { psychologicalSymptoms, somaticSymptoms, options, percentRange, timeDivision, timeUnit, timeUnits, sxProgress, actionType, actionProgress, amPm, pattern, posiNnega, frequency, quality, feeling, suicidalMethod, relationType, interPersonalMethod, alcoholBeverage, bingeEatingType, bingeEatingWhen, exerciseType, exerciseFrequency, noExerciseWhy, sleepQuality } from "$lib/data/progress/subjective";
     import type { SymptomData, SymptomItemsData, InterPersonalData, LeisureNhobbiesData, AlcoholData, DietData, ExerciseData, SleepData } from "$lib/types/progress/subjective";
     import { updateArray } from "$lib/utils/array";
+    import { saveToLocalStorage, openFromLocalStorage, loadExistingKeys, loadKeys } from "$lib/utils/localStorage";
     import SaveToLocalStorageDialog from "$lib/components/dialog/SaveToLocalStorageDialog.svelte";
     import OpenFromLocalStorageDialog from "$lib/components/dialog/OpenFromLocalStorageDialog.svelte";
 
+    // localStorage initialization
     let showSaveToLocalStorageDialog = false;
     let showOpenFromLocalStorageDialog = false;
     let nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
@@ -13,52 +15,19 @@
     let keys: string[] = [];
     let selectedKey = "";
 
-    function loadExistingKeys() {
-        existingKeys = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key?.startsWith("copyContent-")) {
-                existingKeys.push(key.replace("copyContent-", ""));
-            }
-        }
-    }
-
-    function loadKeys() {
-        keys = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key?.startsWith('copyContent-')) {
-                keys.push(key);
-            }
-        }
+    // localStorage Open 버튼 클릭 시 keys 로드
+    function handleOpenClick() {
+        keys = loadKeys();
         selectedKey = keys[0] || "";
+        showOpenFromLocalStorageDialog = true;
     }
 
-    function saveToLocalStorage(name: string) {
-        const key = `copyContent-${name}`;
-        const data = {
-            store: "drNoteState",
-            state: $drNoteState
-        };
-        localStorage.setItem(key, JSON.stringify(data));
-        showSaveToLocalStorageDialog = false;
-        loadExistingKeys();
+    // localStorage Save 버튼 클릭 시 existingKeys 갱신
+    function handleSaveClick() {
+        nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
+        existingKeys = loadExistingKeys();
+        showSaveToLocalStorageDialog = true;
     }
-
-    function openFromLocalStorage(key: string) {
-        if (!key) return;
-        const data = localStorage.getItem(key);
-        if (data) {
-            const parsedData = JSON.parse(data);
-            if (parsedData.store === "drNoteState") {
-                drNoteState.set(parsedData.state);
-            }
-        }
-        showOpenFromLocalStorageDialog = false;
-    }
-
-    // 초기 키 로드
-    loadExistingKeys();
 </script>
 
 {#snippet symptomList(symptomItems: SymptomItemsData[], symptomGroup: "psychological" | "somatic")}
@@ -117,24 +86,20 @@ OR
             resetSubjective($drNoteState);
             //console.log("Subjective reset:", $drNoteState.progress.subjective);
         }
-    }}>Clear Subjective</button>
+    }}>Clear Subjective Contents</button>
 
-    <button onclick={() => {
-        nameToSave = new Date().toISOString().replace(/T/, "-").replace(/:/g, "-").replace(/.\d{3}Z$/, "");
-        loadExistingKeys(); // Ensure existingKeys are up-to-date
-        showSaveToLocalStorageDialog = true;
-    }}>Save to Browser</button>
-    
-    <button onclick={() => {
-        loadKeys();
-        showOpenFromLocalStorageDialog = true;
-    }}>Open from Browser</button>
+    <button onclick={handleSaveClick}>Save to Browser</button>
+    <button onclick={handleOpenClick}>Open to Browser</button>
     
     {#if showSaveToLocalStorageDialog}
         <SaveToLocalStorageDialog
             name={nameToSave}
             existingKeys={existingKeys}
-            onSave={(name) => saveToLocalStorage(name)}
+            onSave={(name) => {
+                saveToLocalStorage(name, $drNoteState);
+                existingKeys = loadExistingKeys(); // 저장후 갱신
+                showSaveToLocalStorageDialog = false;
+            }}
             onClose={() => showSaveToLocalStorageDialog = false}
         />
     {/if}
@@ -143,7 +108,10 @@ OR
         <OpenFromLocalStorageDialog
             keys={keys}
             selectedKey={selectedKey}
-            onOpen={(key) => openFromLocalStorage(key)}
+            onOpen={(key) => {
+                openFromLocalStorage(key);
+                showOpenFromLocalStorageDialog = false;
+            }}
             onClose={() => showOpenFromLocalStorageDialog = false}
         />
     {/if}

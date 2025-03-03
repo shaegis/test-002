@@ -1,5 +1,14 @@
 # Bug
 
+
+
 # 기능개선
 * localStorage 저장시 암호화.
-* localStorage 저장 루틴을 protections, scales등에서도 사용가능하도록 $lib/util로 빼내기.
+    * Lucia Auth의 사용자 세션에서 파생된 키(ex: hashed user ID)
+
+
+
+# Error 처리방식
+* use toast message or modal
+## where?
+* isLocalStorageAvailable() in lib/utils/localStorage.ts

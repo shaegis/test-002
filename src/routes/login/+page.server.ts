@@ -51,6 +51,12 @@ export const actions: Actions = {
         const session = await auth.createSession(sessionToken, existingUser.id);
         auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
+        event.locals.user = {
+            id: existingUser.id,
+            username: existingUser.username,
+            encryptionKey: existingUser.encryptionKey,
+        };
+
         return redirect(302, '/dashBoard');
     }
 };

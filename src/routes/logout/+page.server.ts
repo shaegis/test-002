@@ -3,20 +3,21 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
-	if (!event.locals.user) {
-		return redirect(302, '/login');
-	}
-	return { user: event.locals.user };
+    if (!event.locals.user) {
+        return redirect(302, '/login');
+    }
+    return { user: event.locals.user };
 };
 
 export const actions: Actions = {
-	default: async (event) => {
-		if (!event.locals.session) {
-			return fail(401);
-		}
-		await auth.invalidateSession(event.locals.session.id);
-		auth.deleteSessionTokenCookie(event);
+    default: async (event) => {
+        if (!event.locals.session) {
+            return fail(401);
+        }
+        await auth.invalidateSession(event.locals.session.id);
+        auth.deleteSessionTokenCookie(event);
+        event.locals.user = null;
 
-		return redirect(302, '/');
-	},
+        return redirect(302, '/');
+    },
 };

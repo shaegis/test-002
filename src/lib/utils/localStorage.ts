@@ -1,8 +1,10 @@
 import { drNoteState } from "$lib/stores/drNoteState";
 import type { DrNoteState } from "$lib/stores/drNoteState";
-import CryptoJS from "crypto-js";
+import { encryptionKey } from "$lib/stores/encryptionKey";
+//import CryptoJS from "crypto-js";
+import { get } from "svelte/store";
 
-const ENCRYPTION_KEY = "my-secrete-key-must-change-to-LuciaAuth-hased-userID";
+//const ENCRYPTION_KEY = "my-secrete-key-must-change-to-LuciaAuth-hased-userID";
 
 function isLocalStorageAvailable() {
     try {
@@ -15,7 +17,48 @@ function isLocalStorageAvailable() {
     }
 }
 
-export function saveToLocalStorage(name: string, state: DrNoteState) {
+async function encryptData(data: string, key: string): Promise<string> {
+    const encodedData = new TextEncoder().encode(data);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const cryptoKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(key),
+        { name: "AES-GCM" },
+        false,
+        ["encrypt"]
+    );
+    const encrypted = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        cryptoKey,
+        encodedData
+    );
+    const encryptedArray = new Uint8Array(encrypted);
+    const result = new Uint8Array(iv.length + encryptedArray.length);
+    result.set(iv, 0);
+    result.set(encryptedArray, iv.length);
+    return btoa(String.fromCharCode(...result));
+}
+
+async function decryptData(encryptedData: string, key: string): Promise<string> {
+    const data = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0));
+    const iv = data.slice(0, 12);
+    const encrypted = data.slice(12);
+    const cryptoKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(key),
+        { name: "AES-GCM" },
+        false,
+        ["decrypt"]
+    );
+    const decrypted = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: iv },
+        cryptoKey,
+        encrypted
+    );
+    return new TextDecoder().decode(decrypted);
+}
+
+export async function saveToLocalStorage(name: string, state: DrNoteState) {
     if (!isLocalStorageAvailable()) {
         console.error("localStorage is not available.");
         return;
@@ -27,28 +70,36 @@ export function saveToLocalStorage(name: string, state: DrNoteState) {
     };
     try {
         const jsonData = JSON.stringify(data);
-        const encryptedData = CryptoJS.AES.encrypt(jsonData, ENCRYPTION_KEY).toString();
-        //localStorage.setItem(key, JSON.stringify(data));
+        const keyValue = get(encryptionKey);
+        if (!keyValue) {
+            console.error("Encryption key is not available.");
+            return;
+        }
+        const encryptedData = await encryptData(jsonData, keyValue);
+        //const encryptedData = CryptoJS.AES.encrypt(jsonData, ENCRYPTION_KEY).toString();
         localStorage.setItem(key, encryptedData);
     } catch (error) {
         console.error("Error saving to localStorage:", error);
     }
 }
 
-export function openFromLocalStorage(key: string) {
+export async function openFromLocalStorage(key: string) {
     if (!isLocalStorageAvailable()) {
         console.error("localStorage is not available.");
         return;
     }
     if (!key) return;
-    //const data = localStorage.getItem(key);
     const encryptedData = localStorage.getItem(key);
-    //if (data) {
     if (encryptedData) {
         try {
-            const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
-            const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-            //const parsedData = JSON.parse(data);
+            //const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
+            const keyValue = get(encryptionKey);
+            if (!keyValue) {
+                console.error("Encryption key is not available.");
+                return;
+            }
+            const decryptedData = await decryptData(encryptedData, keyValue);
+            //const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
             const parsedData = JSON.parse(decryptedData);
             if (parsedData.store === "drNoteState") {
                 drNoteState.set(parsedData.state);

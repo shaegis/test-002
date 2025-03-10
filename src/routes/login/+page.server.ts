@@ -4,7 +4,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import * as auth from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import * as table from '$lib/server/db/schema';
+import { user } from '$lib/server/db/schema';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
@@ -29,13 +29,21 @@ export const actions: Actions = {
 
         const result = await db
             .select()
-            .from(table.user)
-            .where(eq(table.user.username, username));
+//            .select({
+//                id: user.id,
+//                username: user.username,
+//                passwordHash: user.password_hash,
+//                encryption_key: user.encryption_key,
+//            })
+            .from(user)
+            .where(eq(user.username, username));
+        console.log("Raw result:", result);
 
         const existingUser = result.at(0);
         if (!existingUser) {
             return fail(400, { message: 'Incorrect username or password' });
         }
+        console.log("Login existingUser:", existingUser);
 
         const validPassword = await verify(existingUser.passwordHash, password, {
             memoryCost: 19456,
@@ -54,9 +62,9 @@ export const actions: Actions = {
         event.locals.user = {
             id: existingUser.id,
             username: existingUser.username,
-            encryptionKey: existingUser.encryptionKey,
+            encryptionKey: existingUser.encryption_key,
         };
-
+        console.log("Login event.locals.user:", event.locals.user); // 디버깅
         return redirect(302, '/dashBoard');
     }
 };

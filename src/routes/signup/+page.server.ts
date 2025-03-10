@@ -4,7 +4,7 @@ import { fail, redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import * as auth from "$lib/server/auth";
 import { db } from "$lib/server/db";
-import * as table from "$lib/server/db/schema";
+import { user } from "$lib/server/db/schema";
 import type { Actions, PageServerLoad } from "./$types";
 import crypto from "crypto";
 
@@ -36,14 +36,14 @@ export const actions: Actions = {
             outputLen: 32,
             parallelism: 1,
         });
-        const encryptionKey = crypto.randomBytes(32).toString("base64");
 
+        const encryptionKey = crypto.randomBytes(32).toString("base64");
         try {
-            await db.insert(table.user).values({
+            await db.insert(user).values({
                 id: userId,
                 username,
                 passwordHash,
-                encryptionKey,
+                encryption_key: encryptionKey,
             });
 
             const sessionToken = auth.generateSessionToken();

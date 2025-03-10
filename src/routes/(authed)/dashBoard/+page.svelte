@@ -6,6 +6,7 @@
 
     // $props로 데이터 선언
     let { data } = $props<{ data: PageServerData & { user?: { encryptionKey: string } } }>();
+    console.log("dashBoard data.user:", data?.user); // 디버깅
 
 //    // 초기 설정: encryptionKey가 없으면 설정
 //    if (data?.user?.encryptionKey && !get(encryptionKey)) {
@@ -28,6 +29,9 @@
     $effect(() => {
         if (data?.user?.encryptionKey) {
             encryptionKey.set(data.user.encryptionKey);
+            console.log("Encryption key set:", data.user.encryptionKey); // 디버깅
+        } else {
+            console.error("No encryptionKey in data.user"); // 디버깅
         }
         drNote = JSON.stringify($drNoteState.progress.subjective, null, 2);
     });
